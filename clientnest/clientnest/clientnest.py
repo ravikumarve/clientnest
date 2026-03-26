@@ -14,6 +14,9 @@ from .pages import (
     clients,
 )
 from .state.message import MessageState
+from .state.invoice import InvoiceState
+from .state.agency import AgencyState
+from .state.project import ProjectState
 
 
 class State(rx.State):
@@ -37,11 +40,15 @@ app.add_page(
     on_load=MessageState.load_messages,
 )
 app.add_page(files.project_files, route="/projects/[id]/files")
-app.add_page(invoices.invoices, route="/invoices")
+app.add_page(invoices.invoices, route="/invoices", on_load=InvoiceState.load_invoices)
 app.add_page(invoices.new_invoice, route="/invoices/new")
 app.add_page(settings.settings, route="/settings")
-app.add_page(settings.billing, route="/settings/billing")
-app.add_page(portal.client_portal, route="/portal")
+app.add_page(
+    settings.billing, route="/settings/billing", on_load=AgencyState.load_agency
+)
+app.add_page(
+    portal.client_portal, route="/portal", on_load=ProjectState.load_client_projects
+)
 app.add_page(webhooks.webhook_ls, route="/webhooks/lemonsqueezy")
 app.add_page(auth.accept_invite, route="/accept-invite/[token]")
 app.add_page(clients.clients, route="/clients")

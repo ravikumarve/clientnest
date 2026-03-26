@@ -1,2 +1,8 @@
 
 reflex==0.8.28.post1
+bcrypt==5.0.0
+sqlalchemy==2.0.40
+alembic==1.15.2
+python-dotenv==1.2.2
+lemonsqueezy==0.2.0
+resend==0.11.0

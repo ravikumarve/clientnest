@@ -322,3 +322,44 @@ class ProjectState(rx.State):
     def toggle_create_form(self):
         """Toggle the create project form visibility."""
         self.show_create_form = not self.show_create_form
+
+    @rx.event
+    def load_client_projects(self):
+        """Load projects specifically for the current client user."""
+        with rx.session() as session:
+            # Get current user ID from AuthState
+            user_id = (
+                self.get_state(rx.State).user_id
+                if hasattr(self.get_state(rx.State), "user_id")
+                else None
+            )
+
+            if not user_id:
+                self.projects = []
+                return
+
+            # Query projects where this user is the assigned client
+            projects = (
+                session.query(Project)
+                .filter(Project.client_id == user_id)
+                .order_by(Project.created_at.desc())
+                .all()
+            )
+
+            result = []
+            for project in projects:
+                result.append(
+                    {
+                        "id": project.id,
+                        "title": project.title,
+                        "description": project.description or "",
+                        "status": project.status,
+                        "due_date": project.due_date.strftime("%Y-%m-%d")
+                        if project.due_date
+                        else "",
+                        "created_at": project.created_at.strftime("%Y-%m-%d"),
+                        "client_id": project.client_id,
+                    }
+                )
+
+            self.projects = result

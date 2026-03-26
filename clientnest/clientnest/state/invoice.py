@@ -106,16 +106,16 @@ class InvoiceState(rx.State):
             self.creating = False
 
     @rx.event
-    def set_client_id(self, value: int):
-        self.client_id = value
+    def set_client_id(self, value: str):
+        self.client_id = int(value) if value else 0
 
     @rx.event
-    def set_project_id(self, value: int):
-        self.project_id = value
+    def set_project_id(self, value: str):
+        self.project_id = int(value) if value else 0
 
     @rx.event
-    def set_amount(self, value: float):
-        self.amount = value
+    def set_amount(self, value: str):
+        self.amount = float(value) if value else 0.0
 
     @rx.event
     def set_currency(self, value: str):

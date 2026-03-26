@@ -483,7 +483,7 @@ Tasks for this session:
 
 **WEEK 3 — Communication** ✅ COMPLETED
 
-**WEEK 4 — Invoicing & Polish** ← CURRENT WEEK
+**WEEK 4 — Invoicing & Polish** ✅ COMPLETED
 
 Tasks for this session:
 1. Create `InvoiceState` in `state/invoice.py` with vars: invoices, current_invoice, creating
@@ -498,4 +498,16 @@ Tasks for this session:
 10. Confirm `reflex run` starts with no errors after all above
 
 Do not move to Week 5 tasks until all Week 4 tasks pass `reflex run` cleanly.
+
+**WEEK 5 — Polish & Launch Preparation** ← CURRENT WEEK
+
+Tasks for this session:
+1. Implement email integration for client invites and notifications
+2. Complete file upload/download functionality with storage quotas
+3. Add white-label customization (logo upload, brand colors)
+4. Implement comprehensive testing suite
+5. Prepare for deployment (Railway configuration, environment setup)
+6. Add monitoring and error logging
+7. Conduct security audit of authentication and payment flows
+8. Confirm `reflex run` starts with no errors after all above
 

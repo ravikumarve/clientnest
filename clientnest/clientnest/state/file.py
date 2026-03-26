@@ -5,7 +5,7 @@ from pathlib import Path
 from ..models.file import File
 from ..models.project import Project
 from ..models.user import User
-from ..state.auth import AuthState
+from .auth import AuthState
 from typing import List, Dict
 
 

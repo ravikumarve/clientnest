@@ -23,7 +23,7 @@ A SaaS platform where freelancers and small agencies get a branded portal to man
 **WEEK 1 — Foundation** ✅ COMPLETED
 **WEEK 2 — Core CRUD** ✅ COMPLETED  
 **WEEK 3 — Communication** ✅ COMPLETED
-**WEEK 4 — Invoicing & Polish** 🚧 IN PROGRESS
+**WEEK 4 — Invoicing & Polish** ✅ COMPLETED
 
 ### Week 3 Completed Features:
 
@@ -37,6 +37,17 @@ A SaaS platform where freelancers and small agencies get a branded portal to man
 - ✅ Authenticated download backend route
 - ✅ Soft delete via is_deleted flag
 - ✅ Reflex app compiles without errors
+
+### Week 4 Completed Features:
+
+- ✅ **InvoiceState** with invoices, current_invoice, creating vars
+- ✅ Invoice list page at `/invoices` with data table
+- ✅ New invoice creation page at `/invoices/new`
+- ✅ LemonSqueezy webhook placeholder implementation
+- ✅ Billing page at `/settings/billing` with upgrade options
+- ✅ Client portal scoping at `/portal` (client-specific views)
+- ✅ Agency plan gating with computed vars
+- ✅ All import issues fixed and app compiles cleanly
 
 ## 🚀 Getting Started
 
