@@ -15,9 +15,11 @@ def white_label() -> rx.Component:
                     rx.card(
                         rx.vstack(
                             rx.heading("Brand Color", size="5"),
-                            rx.color_picker(
+                            rx.input(
                                 value=AgencyState.brand_color,
                                 on_change=AgencyState.update_brand_color,
+                                placeholder="#2563EB",
+                                type="color",
                             ),
                             rx.text("Current color: "),
                             rx.box(
@@ -42,14 +44,19 @@ def white_label() -> rx.Component:
                                 ),
                                 rx.text("No logo uploaded"),
                             ),
-                            rx.upload(
-                                rx.button(
-                                    "Upload Logo",
-                                    variant="outline",
+                            rx.cond(
+                                AgencyState.is_logo_uploading,
+                                rx.spinner(),
+                                rx.upload(
+                                    rx.button(
+                                        "Upload Logo",
+                                        variant="outline",
+                                    ),
+                                    border="1px dashed",
+                                    padding="4",
+                                    border_radius="md",
+                                    on_drop=AgencyState.handle_logo_upload,
                                 ),
-                                border="1px dashed",
-                                padding="4",
-                                border_radius="md",
                             ),
                             spacing="3",
                         ),

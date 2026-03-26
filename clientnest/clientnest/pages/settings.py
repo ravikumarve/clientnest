@@ -30,6 +30,14 @@ def settings() -> rx.Component:
                     rx.text("Manage team members and permissions"),
                     rx.button("Manage Team", on_click=rx.redirect("/settings/team")),
                 ),
+                rx.card(
+                    rx.heading("Branding", size="6"),
+                    rx.text("Customize your agency's branding"),
+                    rx.button(
+                        "White-label Settings",
+                        on_click=rx.redirect("/settings/white-label"),
+                    ),
+                ),
                 columns="3",
                 spacing="4",
                 width="100%",

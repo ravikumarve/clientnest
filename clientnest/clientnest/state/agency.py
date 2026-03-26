@@ -5,6 +5,8 @@ from ..models.project import Project
 from ..email import EmailService
 import uuid
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import List
 
 
 class AgencyState(rx.State):
@@ -28,6 +30,9 @@ class AgencyState(rx.State):
     invite_expires_at: str = ""
     show_invite_form: bool = False
 
+    # Logo upload state
+    is_logo_uploading: bool = False
+
     # Explicit setters — required in Reflex 0.8.9+
     def set_search_term(self, value: str):
         self.search_term = value
@@ -37,6 +42,9 @@ class AgencyState(rx.State):
 
     def set_invite_email(self, value: str):
         self.invite_email = value
+
+    def set_is_logo_uploading(self, value: bool):
+        self.is_logo_uploading = value
 
     @rx.var
     def can_invite_client(self) -> bool:
@@ -104,6 +112,58 @@ class AgencyState(rx.State):
         self.logo_url = logo_url
         # In a real implementation, save to database
         return rx.toast.success("Logo updated")
+
+    @rx.event
+    def handle_logo_upload(self, files: List[rx.UploadFile]):
+        """Handle logo file upload."""
+        if not files:
+            return
+
+        self.is_logo_uploading = True
+
+        try:
+            file = files[0]  # Only handle first file
+
+            # Check if file is an image
+            if not file.content_type.startswith("image/"):
+                return rx.toast.error("Please upload an image file")
+
+            # Check file size (max 2MB)
+            content = file.read()
+            if len(content) > 2 * 1024 * 1024:
+                return rx.toast.error("Logo must be less than 2MB")
+
+            # Create uploads directory
+            uploads_dir = Path("uploads/agency-logos")
+            uploads_dir.mkdir(exist_ok=True, parents=True)
+
+            # Generate unique filename
+            unique_id = str(uuid.uuid4())
+            file_extension = Path(file.filename).suffix
+            stored_filename = f"{unique_id}{file_extension}"
+            file_path = uploads_dir / stored_filename
+
+            # Write file
+            with open(file_path, "wb") as f:
+                f.write(content)
+
+            # Update logo URL
+            self.logo_url = f"/uploads/agency-logos/{stored_filename}"
+
+            # In a real implementation, save to database
+            return rx.toast.success("Logo uploaded successfully")
+
+        finally:
+            self.is_logo_uploading = False
+
+    @rx.event
+    def serve_logo(self, logo_path: str):
+        """Serve logo file."""
+        if logo_path.startswith("/uploads/agency-logos/"):
+            file_path = Path(".") / logo_path[1:]  # Remove leading slash
+            if file_path.exists():
+                return rx.file(file_path)
+        return rx.window_alert("Logo not found")
 
     @rx.event
     def toggle_invite_form(self):

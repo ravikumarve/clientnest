@@ -1,8 +1,34 @@
 import reflex as rx
 import bcrypt
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..models.user import User
 from ..models.agency import Agency
+
+# Rate limiting storage
+_login_attempts = {}
+
+
+def check_rate_limit(ip: str, max_attempts: int = 5, window_minutes: int = 15) -> bool:
+    """Check if IP is rate limited."""
+    now = datetime.utcnow()
+
+    if ip not in _login_attempts:
+        _login_attempts[ip] = []
+
+    # Clean old attempts
+    _login_attempts[ip] = [
+        attempt_time
+        for attempt_time in _login_attempts[ip]
+        if now - attempt_time < timedelta(minutes=window_minutes)
+    ]
+
+    # Check if rate limited
+    if len(_login_attempts[ip]) >= max_attempts:
+        return False
+
+    # Add new attempt
+    _login_attempts[ip].append(now)
+    return True
 
 
 class AuthState(rx.State):
@@ -19,6 +45,17 @@ class AuthState(rx.State):
         """Handle user login."""
         email = form_data.get("email")
         password = form_data.get("password")
+
+        # Get client IP for rate limiting
+        client_ip = (
+            self.router.headers.get("x-forwarded-for")
+            or self.router.headers.get("x-real-ip")
+            or "unknown"
+        )
+
+        # Check rate limiting
+        if not check_rate_limit(client_ip):
+            return rx.toast.error("Too many login attempts. Please try again later.")
 
         with rx.session() as session:
             user = session.query(User).filter(User.email == email).first()
@@ -49,6 +86,24 @@ class AuthState(rx.State):
             else:
                 # Return error message (will be handled in component)
                 return rx.window_alert("Invalid email or password")
+
+    def _validate_password_strength(self, password: str) -> list:
+        """Validate password meets strength requirements."""
+        errors = []
+
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters")
+
+        if not any(char.isdigit() for char in password):
+            errors.append("Password must contain at least one number")
+
+        if not any(char.isupper() for char in password):
+            errors.append("Password must contain at least one uppercase letter")
+
+        if not any(char.islower() for char in password):
+            errors.append("Password must contain at least one lowercase letter")
+
+        return errors
 
     @rx.event
     def logout(self):
@@ -86,6 +141,11 @@ class AuthState(rx.State):
             agency = Agency(name=agency_name, slug=slug)
             session.add(agency)
             session.flush()  # Get agency ID
+
+            # Validate password strength
+            password_errors = self._validate_password_strength(password)
+            if password_errors:
+                return rx.toast.error(" ".join(password_errors))
 
             # Create user
             hashed_password = bcrypt.hashpw(

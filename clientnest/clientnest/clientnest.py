@@ -12,6 +12,7 @@ from .pages import (
     portal,
     webhooks,
     clients,
+    white_label,
 )
 from .state.message import MessageState
 from .state.invoice import InvoiceState
@@ -22,7 +23,12 @@ from .state.project import ProjectState
 class State(rx.State):
     """The base app state."""
 
-    pass
+    def check_session_expiry(self):
+        """Check if session should expire based on last activity."""
+        # Session expires after 24 hours of inactivity
+        # In a real implementation, this would check last activity timestamp
+        # For now, this is a placeholder for session management
+        pass
 
 
 app = rx.App()
@@ -53,3 +59,8 @@ app.add_page(
 app.add_page(webhooks.webhook_ls, route="/webhooks/lemonsqueezy")
 app.add_page(auth.accept_invite, route="/accept-invite/[token]")
 app.add_page(clients.clients, route="/clients")
+app.add_page(
+    white_label.white_label,
+    route="/settings/white-label",
+    on_load=AgencyState.load_agency,
+)
