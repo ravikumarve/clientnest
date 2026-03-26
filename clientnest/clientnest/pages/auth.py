@@ -105,14 +105,44 @@ def signup() -> rx.Component:
 
 
 def accept_invite() -> rx.Component:
+    """Accept invitation page for client signup."""
     return rx.container(
         rx.color_mode.button(position="top-right"),
         rx.vstack(
             rx.heading("Accept Invitation", size="8"),
-            rx.text("Setting up your account...", size="4"),
+            rx.text("Set up your client account", size="4"),
+            rx.form(
+                rx.vstack(
+                    rx.input(
+                        placeholder="Your Name",
+                        name="name",
+                        required=True,
+                    ),
+                    rx.input(
+                        type="password",
+                        placeholder="Password",
+                        name="password",
+                        required=True,
+                    ),
+                    rx.input(
+                        type="password",
+                        placeholder="Confirm Password",
+                        name="confirm_password",
+                        required=True,
+                    ),
+                    rx.button(
+                        "Create Account",
+                        type="submit",
+                        width="100%",
+                    ),
+                    spacing="4",
+                ),
+                on_submit=AuthState.accept_invite,
+            ),
             spacing="5",
             justify="center",
             min_height="85vh",
             width="100%",
+            max_width="400px",
         ),
     )

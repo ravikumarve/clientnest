@@ -115,3 +115,54 @@ class AuthState(rx.State):
             }
 
             return rx.redirect("/dashboard")
+
+    @rx.event
+    def accept_invite(self, form_data: dict):
+        """Handle client invitation acceptance."""
+        token = self.router.page.params.get("token")
+        name = form_data.get("name")
+        password = form_data.get("password")
+
+        if not all([token, name, password]):
+            return rx.toast.error("Please fill in all fields")
+
+        # TODO: Validate token against database
+        # For now, we'll assume token is valid and create the user
+
+        with rx.session() as session:
+            # Check if email already exists
+            existing_user = session.query(User).filter(User.email == token).first()
+            if existing_user:
+                return rx.toast.error("User already exists with this email")
+
+            # Create user with client role
+            # In a real implementation, we'd lookup the agency from the token
+            hashed_password = bcrypt.hashpw(
+                password.encode("utf-8"), bcrypt.gensalt()
+            ).decode("utf-8")
+
+            # For demo purposes, create user with a default agency
+            user = User(
+                agency_id=1,  # Default agency for demo
+                email=token,  # Using token as email for demo
+                password_hash=hashed_password,
+                role="client",
+                name=name,
+            )
+            session.add(user)
+            session.commit()
+
+            # Set session
+            self.user_id = user.id
+            self.agency_id = user.agency_id
+            self.role = user.role
+            self.is_logged_in = True
+            self.current_user = {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "role": user.role,
+                "agency_id": user.agency_id,
+            }
+
+            return rx.redirect("/portal")

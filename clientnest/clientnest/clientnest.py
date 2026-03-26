@@ -46,6 +46,7 @@ app.add_page(settings.settings, route="/settings")
 app.add_page(
     settings.billing, route="/settings/billing", on_load=AgencyState.load_agency
 )
+
 app.add_page(
     portal.client_portal, route="/portal", on_load=ProjectState.load_client_projects
 )

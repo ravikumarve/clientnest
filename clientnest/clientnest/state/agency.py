@@ -2,6 +2,7 @@ import reflex as rx
 from ..models.agency import Agency
 from ..models.user import User
 from ..models.project import Project
+from ..email import EmailService
 import uuid
 from datetime import datetime, timedelta
 
@@ -53,7 +54,8 @@ class AgencyState(rx.State):
             return self.clients
         term = self.search_term.lower()
         return [
-            c for c in self.clients
+            c
+            for c in self.clients
             if term in c["name"].lower() or term in c["email"].lower()
         ]
 
@@ -67,10 +69,14 @@ class AgencyState(rx.State):
             auth = self.get_state(rx.State)
             agency_id = getattr(auth, "agency_id", 1)
 
-            clients = session.query(User).filter(
-                User.agency_id == agency_id,
-                User.role == "client",
-            ).all()
+            clients = (
+                session.query(User)
+                .filter(
+                    User.agency_id == agency_id,
+                    User.role == "client",
+                )
+                .all()
+            )
 
             self.clients = [
                 {
@@ -78,10 +84,26 @@ class AgencyState(rx.State):
                     "name": c.name,
                     "email": c.email,
                     "projects_count": 0,
-                    "last_active": c.last_login.strftime("%b %d, %Y") if c.last_login else "Never",
+                    "last_active": c.last_login.strftime("%b %d, %Y")
+                    if c.last_login
+                    else "Never",
                 }
                 for c in clients
             ]
+
+    @rx.event
+    def update_brand_color(self, color: str):
+        """Update agency brand color."""
+        self.brand_color = color
+        # In a real implementation, save to database
+        return rx.toast.success("Brand color updated")
+
+    @rx.event
+    def update_logo(self, logo_url: str):
+        """Update agency logo."""
+        self.logo_url = logo_url
+        # In a real implementation, save to database
+        return rx.toast.success("Logo updated")
 
     @rx.event
     def toggle_invite_form(self):
@@ -104,10 +126,31 @@ class AgencyState(rx.State):
         if not self.invite_email:
             return rx.toast.error("Please enter an email address")
 
-        self.invite_token = str(uuid.uuid4())
-        self.invite_expires_at = (datetime.utcnow() + timedelta(days=7)).isoformat()
+        # Generate invite token
+        invite_token = str(uuid.uuid4())
+        expires_at = datetime.utcnow() + timedelta(days=7)
 
-        # TODO: store token in DB and send email with link
+        # Store token in database (in a real implementation)
+        # For now, we'll just store it in memory for the demo
+        self.invite_token = invite_token
+        self.invite_expires_at = expires_at.isoformat()
+
+        # Send invitation email
+        email_sent = EmailService.send_invite_email(
+            to_email=self.invite_email,
+            agency_name=self.agency.get("name", "Your Agency"),
+            invite_token=invite_token,
+            inviter_name=self.get_state(rx.State).current_user.get(
+                "name", "A team member"
+            ),
+        )
+
         email = self.invite_email
         self.clear_invite_form()
-        return rx.toast.success(f"Invitation sent to {email}")
+
+        if email_sent:
+            return rx.toast.success(f"Invitation sent to {email}")
+        else:
+            return rx.toast.warning(
+                f"Invitation created for {email} but email failed to send"
+            )

@@ -5,6 +5,7 @@ from pathlib import Path
 from ..models.file import File
 from ..models.project import Project
 from ..models.user import User
+from ..models.agency import Agency
 from .auth import AuthState
 from typing import List, Dict
 
@@ -66,6 +67,40 @@ class FileState(rx.State):
         """Handle file upload."""
         if not files:
             return
+
+        # Check storage quota
+        total_size = sum(len(file.read()) for file in files)
+        file.read()  # Reset file pointer
+
+        # Get agency plan and check quota
+        with rx.session() as session:
+            agency = (
+                session.query(Agency).filter(Agency.id == AuthState.agency_id).first()
+            )
+            if agency:
+                plan = agency.plan
+                max_storage = self._get_storage_limit(plan)
+
+                # Calculate current storage usage
+                current_usage = (
+                    session.query(rx.func.sum(File.file_size))
+                    .filter(
+                        File.project_id.in_(
+                            session.query(Project.id).filter(
+                                Project.agency_id == AuthState.agency_id
+                            )
+                        ),
+                        File.is_deleted == False,
+                    )
+                    .scalar()
+                    or 0
+                )
+
+                if current_usage + total_size > max_storage:
+                    self.uploading = False
+                    return rx.toast.error(
+                        "Storage quota exceeded. Upgrade your plan to upload more files."
+                    )
 
         self.uploading = True
         self.upload_progress = 0
@@ -141,3 +176,13 @@ class FileState(rx.State):
     @rx.event
     def set_uploading(self, value: bool):
         self.uploading = value
+
+    def _get_storage_limit(self, plan: str) -> int:
+        """Get storage limit in bytes based on plan."""
+        limits = {
+            "free": 500 * 1024 * 1024,  # 500MB
+            "solo": 5 * 1024 * 1024 * 1024,  # 5GB
+            "agency": 20 * 1024 * 1024 * 1024,  # 20GB
+            "studio": 100 * 1024 * 1024 * 1024,  # 100GB
+        }
+        return limits.get(plan, limits["free"])
