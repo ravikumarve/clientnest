@@ -15,8 +15,11 @@ class AuthState(rx.State):
     current_user: dict = {}
 
     @rx.event
-    def login(self, email: str, password: str):
+    def login(self, form_data: dict):
         """Handle user login."""
+        email = form_data.get("email")
+        password = form_data.get("password")
+
         with rx.session() as session:
             user = session.query(User).filter(User.email == email).first()
             if user and bcrypt.checkpw(
@@ -58,8 +61,13 @@ class AuthState(rx.State):
         return rx.redirect("/")
 
     @rx.event
-    def register(self, agency_name: str, your_name: str, email: str, password: str):
+    def register(self, form_data: dict):
         """Handle user registration."""
+        agency_name = form_data.get("agency_name")
+        your_name = form_data.get("your_name")
+        email = form_data.get("email")
+        password = form_data.get("password")
+
         with rx.session() as session:
             # Check if email already exists
             existing_user = session.query(User).filter(User.email == email).first()

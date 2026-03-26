@@ -13,6 +13,7 @@ from .pages import (
     webhooks,
     clients,
 )
+from .state.message import MessageState
 
 
 class State(rx.State):
@@ -30,7 +31,11 @@ app.add_page(
 )
 app.add_page(projects.projects, route="/projects")
 app.add_page(projects.project_detail, route="/projects/[id]")
-app.add_page(messages.project_messages, route="/projects/[id]/messages")
+app.add_page(
+    messages.project_messages,
+    route="/projects/[id]/messages",
+    on_load=MessageState.load_messages,
+)
 app.add_page(files.project_files, route="/projects/[id]/files")
 app.add_page(invoices.invoices, route="/invoices")
 app.add_page(invoices.new_invoice, route="/invoices/new")

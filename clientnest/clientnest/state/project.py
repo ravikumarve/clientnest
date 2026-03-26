@@ -10,9 +10,9 @@ class ProjectState(rx.State):
     """State for project management."""
 
     # Project data
-    projects: List[Dict[str, Any]] = []
-    current_project: Dict[str, Any] = {}
-    tasks: List[Dict[str, Any]] = []
+    projects: list[dict] = []
+    current_project: dict = {}
+    tasks: list[dict] = []
     project_filter: str = "all"  # all | active | review | completed
 
     # Form data for creating/editing
@@ -23,6 +23,19 @@ class ProjectState(rx.State):
 
     # Task form data
     task_title: str = ""
+
+    # Setter methods for form fields
+    def set_project_title(self, value: str):
+        self.project_title = value
+
+    def set_project_description(self, value: str):
+        self.project_description = value
+
+    def set_project_due_date(self, value: str):
+        self.project_due_date = value
+
+    def set_task_title(self, value: str):
+        self.task_title = value
 
     # UI state
     show_create_form: bool = False
@@ -245,6 +258,25 @@ class ProjectState(rx.State):
                 self.load_project(self.current_project["id"])
 
                 return rx.toast.success("Task deleted")
+
+    @rx.event
+    def delete_project(self, project_id: int):
+        """Delete a project."""
+        with rx.session() as session:
+            project = session.query(Project).filter(Project.id == project_id).first()
+            if project:
+                session.delete(project)
+                session.commit()
+
+                # Clear current project if it was deleted
+                if self.current_project.get("id") == project_id:
+                    self.current_project = {}
+                    self.tasks = []
+
+                # Reload projects
+                self.load_projects()
+
+                return rx.toast.success("Project deleted")
 
     @rx.event
     def set_project_filter(self, filter_value: str):

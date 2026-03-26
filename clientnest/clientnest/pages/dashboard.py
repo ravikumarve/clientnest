@@ -28,11 +28,36 @@ def dashboard() -> rx.Component:
             ),
             rx.hstack(
                 rx.grid(
-                    rx.stat_card(
-                        "Projects", ProjectState.projects.length(), "folder", "blue"
+                    rx.card(
+                        rx.vstack(
+                            rx.text("Projects", size="3"),
+                            rx.text(ProjectState.projects.length(), size="5"),
+                            rx.icon("folder", size=20, color_scheme="blue"),
+                            spacing="2",
+                            align="center",
+                        ),
+                        size="3",
                     ),
-                    rx.stat_card("Clients", "0", "users", "green"),
-                    rx.stat_card("Invoices", "0", "dollar-sign", "purple"),
+                    rx.card(
+                        rx.vstack(
+                            rx.text("Clients", size="3"),
+                            rx.text("0", size="5"),
+                            rx.icon("users", size=20, color_scheme="green"),
+                            spacing="2",
+                            align="center",
+                        ),
+                        size="3",
+                    ),
+                    rx.card(
+                        rx.vstack(
+                            rx.text("Invoices", size="3"),
+                            rx.text("0", size="5"),
+                            rx.icon("dollar-sign", size=20, color_scheme="purple"),
+                            spacing="2",
+                            align="center",
+                        ),
+                        size="3",
+                    ),
                     template_columns="repeat(3, 1fr)",
                     gap="4",
                     width="100%",
@@ -58,26 +83,20 @@ def create_project_form_dashboard() -> rx.Component:
                         name="title",
                         required=True,
                         value=ProjectState.project_title,
-                        on_change=lambda e: setattr(
-                            ProjectState, "project_title", e.target.value
-                        ),
+                        on_change=ProjectState.set_project_title,
                     ),
-                    rx.textarea(
+                    rx.text_area(
                         placeholder="Description",
                         name="description",
                         value=ProjectState.project_description,
-                        on_change=lambda e: setattr(
-                            ProjectState, "project_description", e.target.value
-                        ),
+                        on_change=ProjectState.set_project_description,
                     ),
                     rx.input(
                         placeholder="Due Date (optional)",
                         type="date",
                         name="due_date",
                         value=ProjectState.project_due_date,
-                        on_change=lambda e: setattr(
-                            ProjectState, "project_due_date", e.target.value
-                        ),
+                        on_change=ProjectState.set_project_due_date,
                     ),
                     rx.hstack(
                         rx.button(

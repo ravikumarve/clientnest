@@ -44,6 +44,7 @@ at a price ManyRequests refuses to offer.
 7. **File downloads served through authenticated backend route only.** Never expose raw file paths.
 8. **LemonSqueezy webhook must validate HMAC signature** before any DB write.
 9. **`UIState` must never import DB models.** It is pure UI logic only.
+10.**- All State vars that need on_change must have explicit setter methods defined as `def set_varname(self, value: str)`. Never rely on  auto-generated setters — deprecated in Reflex 0.8.9.
 
 ---
 
@@ -480,5 +481,21 @@ Tasks for this session:
 12. Soft delete via is_deleted flag on File model
 13. Confirm `reflex run` starts with no errors after all above
 
-Do not move to Week 4 tasks until all Week 3 tasks pass `reflex run` cleanly.
+**WEEK 3 — Communication** ✅ COMPLETED
+
+**WEEK 4 — Invoicing & Polish** ← CURRENT WEEK
+
+Tasks for this session:
+1. Create `InvoiceState` in `state/invoice.py` with vars: invoices, current_invoice, creating
+2. Create invoice list page at `/invoices` — table view with columns: Invoice #, Client, Amount, Status, Due Date, Actions
+3. Create new invoice page at `/invoices/new` — form with: Client dropdown, Project dropdown (optional), Amount, Currency (USD/INR), Due Date, Notes
+4. Generate LemonSqueezy checkout URLs for invoice payments
+5. Create billing page at `/settings/billing` — show current plan, upgrade buttons for Solo/Agency plans
+6. Add white-label settings to `/settings` — agency name, logo upload, brand color picker
+7. Implement plan gating throughout the app using AgencyState computed vars
+8. Add client portal view at `/portal` — projects, messages, files scoped to current user only
+9. Create LemonSqueezy webhook handler at `/webhooks/lemonsqueezy` — validate HMAC, update subscriptions, mark invoices paid
+10. Confirm `reflex run` starts with no errors after all above
+
+Do not move to Week 5 tasks until all Week 4 tasks pass `reflex run` cleanly.
 
