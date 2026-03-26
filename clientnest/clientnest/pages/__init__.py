@@ -10,6 +10,7 @@ from . import (
     portal,
     webhooks,
     clients,
+    white_label,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "portal",
     "webhooks",
     "clients",
+    "white_label",
 ]

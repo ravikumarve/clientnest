@@ -1,0 +1,35 @@
+[build]
+builder = "nixpacks"
+
+[build.environment]
+NODE_VERSION = "20"
+PYTHON_VERSION = "3.12"
+
+[deploy]
+startCommand = "python -m reflex run --production"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "clientnest"
+
+[services.env]
+FRONTEND_PORT = "3000"
+BACKEND_PORT = "8000"
+
+# Database configuration
+DATABASE_URL = "sqlite:///clientnest.db"
+
+# Email configuration (optional)
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = "587"
+
+# LemonSqueezy configuration (optional)
+LEMONSQUEEZY_API_KEY = "your_lemon_squeezy_api_key"
+LEMONSQUEEZY_WEBHOOK_SECRET = "your_webhook_secret"
+
+[services.checks]
+httpPath = "/"
+timeout = 30
+interval = 60
+initialDelay = 10
