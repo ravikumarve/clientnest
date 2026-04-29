@@ -1,5 +1,5 @@
 assets/external/
-.web
+.web/
 *.py[cod]
 .states
 .venv/
@@ -10,3 +10,10 @@ __pycache__/
 .env
 *.db
 .reflex/
+
+# Development-only files
+.opencode/
+AGENTS.md
+errors*.txt
+*.log
+.DS_Store
