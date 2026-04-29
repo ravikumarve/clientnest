@@ -35,18 +35,11 @@ app = rx.App(
     style={
         "background_color": "#030305",
         "color": "#f8fafc",
-    }
+    },
+    stylesheets=[
+        "styles/custom.css",
+    ],
 )
-
-# Add custom CSS file
-with open("clientnest/clientnest/styles/custom.css", "r") as f:
-    custom_css = f.read()
-    # Add custom CSS to the app
-    app.style = {
-        "background_color": "#030305",
-        "color": "#f8fafc",
-        "custom_css": custom_css,
-    }
 
 app.add_page(index.index, route="/")
 app.add_page(auth.login, route="/login")
