@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientnest | White-Label Client Portal SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#030305',
+                        nestAccent: '#6366f1',
+                        nestGlow: '#8b5cf6',
+                        nestSurface: 'rgba(15, 15, 20, 0.6)',
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'float-slow': 'float 20s ease-in-out infinite',
+                        'float-delayed': 'float 25s ease-in-out infinite 5s',
+                        'pulse-glow': 'pulseGlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+                            '33%': { transform: 'translate(5%, 5%) scale(1.05)' },
+                            '66%': { transform: 'translate(-5%, 2%) scale(0.95)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #030305;
+            color: #f8fafc;
+            cursor: none;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Lusion-Inspired Fluid Orbs */
+        .ambient-fluid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .fluid-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #orb-primary { width: 60vw; height: 60vw; background: rgba(99, 102, 241, 0.15); top: -20%; left: -10%; }
+        #orb-secondary { width: 50vw; height: 50vw; background: rgba(139, 92, 246, 0.12); bottom: -10%; right: -10%; }
+
+        /* Grain Texture */
+        .noise-layer {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Custom Interactive Cursor */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transition: width 0.2s, height 0.2s;
+        }
+
+        .cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        a:hover ~ .cursor-ring, button:hover ~ .cursor-ring, .interactive-hover:hover ~ .cursor-ring {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: #fff;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Glassmorphism Architecture */
+        .glass-panel {
+            background: var(--nestSurface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Typography Gradients */
+        .text-gradient-fluid {
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradient-shift 8s linear infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Citations */
+        .citation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: #64748b;
+            vertical-align: super;
+            margin-left: 2px;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        .separator-line {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        /* Smooth Marquee */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 40s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-nestAccent selection:text-white">
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <div class="ambient-fluid">
+        <div class="fluid-orb animate-float-slow" id="orb-primary"></div>
+        <div class="fluid-orb animate-float-delayed" id="orb-secondary"></div>
+    </div>
+    <div class="noise-layer"></div>
+
+    <nav class="fixed w-full z-50 px-8 py-8 mix-blend-difference">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 interactive-hover">
+                <div class="w-8 h-8 rounded-full border border-white flex items-center justify-center text-white font-bold text-sm">C</div>
+                <span class="text-xl font-display font-bold tracking-widest uppercase text-white">Clientnest</span>
+            </div>
+            <div class="hidden md:flex gap-12 font-mono text-[10px] tracking-[0.2em] uppercase text-white/60">
+                <a href="#manifesto" class="hover:text-white transition-colors interactive-hover">The Paradigm</a>
+                <a href="#features" class="hover:text-white transition-colors interactive-hover">Core Engine</a>
+                <a href="#security" class="hover:text-white transition-colors interactive-hover">Fortress</a>
+                <a href="#pricing" class="hover:text-white transition-colors interactive-hover">Investment</a>
+            </div>
+            <div>
+                <a href="https://github.com/yourusername/clientnest" class="font-mono text-[10px] tracking-[0.2em] uppercase border border-white/30 px-6 py-3 rounded-full hover:bg-white hover:text-black transition-all interactive-hover">
+                    Explore Source <span class="citation"></span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative min-h-[100vh] flex flex-col justify-center px-8 z-10 pt-20">
+        <div class="max-w-6xl mx-auto w-full text-center relative">
+            <div class="inline-flex items-center gap-3 px-5 py-2 border border-nestAccent/30 bg-nestAccent/10 rounded-full mb-10 text-[10px] font-mono text-indigo-300 uppercase tracking-[0.2em] backdrop-blur-sm interactive-hover">
+                <span class="w-2 h-2 rounded-full bg-nestAccent animate-pulse shadow-[0_0_10px_#6366f1]"></span>
+                The $19/month alternative to $399/month ManyRequests <span class="citation"></span>
+            </div>
+            
+            <h1 class="font-display text-5xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter leading-[0.9] mb-10">
+                YOUR BRAND IDENTITY.<br />
+                <span class="text-gradient-fluid">OUR ARCHITECTURE.</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl font-sans font-light text-slate-400 max-w-3xl mx-auto leading-relaxed mb-16">
+                A fully branded client portal engineered meticulously for solo consultants and small agencies <span class="citation"></span>. Centralize project tracking, file sharing, messaging, and invoicing in one unified space where your clients see your brand, not ours <span class="citation"></span>.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-8 font-mono text-xs tracking-widest uppercase">
+                <a href="#pricing" class="px-10 py-5 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-[0_0_30px_rgba(255,255,255,0.1)] interactive-hover">
+                    Initiate Trial <span class="citation"></span>
+                </a>
+                <a href="#features" class="px-10 py-5 border border-white/20 text-white rounded-full hover:border-white transition-colors duration-300 interactive-hover">
+                    Examine Capabilities
+                </a>
+            </div>
+            
+            <div class="mt-20 font-mono text-[10px] text-slate-500 tracking-widest uppercase flex flex-col items-center gap-4">
+                <span>Scroll to descend</span>
+                <div class="w-px h-16 bg-gradient-to-b from-slate-500 to-transparent"></div>
+            </div>
+        </div>
+    </header>
+
+    <section id="manifesto" class="py-32 relative z-10">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="text-center mb-24">
+                <h2 class="font-display text-4xl md:text-6xl font-bold mb-6">Stop Subsidizing Software.</h2>
+                <p class="font-sans text-lg text-slate-400 max-w-2xl mx-auto tracking-wide leading-relaxed">
+                    Stop paying $399/month for white-label solutions <span class="citation"></span>. Clientnest delivers identical functionality for $19/month, generating $4,560 per year in savings—capital sufficient to hire a part-time VA or aggressively invest in marketing acquisition <span class="citation"></span>.
+                </p>
+            </div>
+
+            <div class="glass-panel rounded-3xl overflow-hidden interactive-hover">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs tracking-widest uppercase">
+                        <thead class="bg-white/5 border-b border-white/10">
+                            <tr>
+                                <th class="py-8 px-8 font-semibold text-slate-300">Feature Analysis</th>
+                                <th class="py-8 px-8 font-semibold text-slate-500">ManyRequests <span class="citation"></span></th>
+                                <th class="py-8 px-8 font-semibold text-nestAccent">Clientnest <span class="citation"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-slate-400">
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="py-6 px-8 text-white">White-Label Cost <span class="citation"></span></td>
+                                <td class="py-6 px-8">$399/mo <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-white font-bold">$19/mo <span class="citation"></span></td>
+                            </tr>
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="py-6 px-8 text-white">Client Portal Access <span class="citation"></span></td>
+                                <td class="py-6 px-8">Verified <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-nestAccent">Verified <span class="citation"></span></td>
+                            </tr>
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="py-6 px-8 text-white">Project Tracking <span class="citation"></span></td>
+                                <td class="py-6 px-8">Verified <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-nestAccent">Verified <span class="citation"></span></td>
+                            </tr>
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="py-6 px-8 text-white">Integrated Invoicing <span class="citation"></span></td>
+                                <td class="py-6 px-8">Verified <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-nestAccent">Verified <span class="citation"></span></td>
+                            </tr>
+                            <tr class="hover:bg-white/[0.02] transition-colors">
+                                <td class="py-6 px-8 text-white">Self-Hostable Architecture <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-red-400">Restricted <span class="citation"></span></td>
+                                <td class="py-6 px-8 text-nestAccent">Verified <span class="citation"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-32 relative z-10 border-t border-white/5 bg-void/50">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="mb-24">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Core Engine Capabilities</h2>
+                <p class="font-mono text-[10px] text-nestAccent tracking-[0.2em] uppercase">Holistic Agency Management <span class="citation"></span></p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="glass-panel p-10 rounded-3xl interactive-hover group">
+                    <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">🎨</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Absolute White-Label <span class="citation"></span></h3>
+                    <ul class="space-y-4 font-sans text-sm text-slate-400 leading-relaxed">
+                        <li>Upload your bespoke brand logo <span class="citation"></span>.</li>
+                        <li>Calibrate UI elements to match your brand colors seamlessly <span class="citation"></span>.</li>
+                        <li>Deploy across a custom domain via the Agency plan <span class="citation"></span>.</li>
+                        <li>Ensure zero Clientnest branding permeates the client interface <span class="citation"></span>.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl interactive-hover group">
+                    <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">📊</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Project Architecture <span class="citation"></span></h3>
+                    <ul class="space-y-4 font-sans text-sm text-slate-400 leading-relaxed">
+                        <li>Construct and manage projects effortlessly with task checklists breaking down deliverables <span class="citation"></span>.</li>
+                        <li>Monitor execution via visual progress bars and dynamic status management workflows (Not Started → In Progress → Review → Completed) <span class="citation"></span>.</li>
+                        <li>Enforce strict due dates to guarantee operational timelines <span class="citation"></span>.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl interactive-hover group">
+                    <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">💬</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Neural Communication <span class="citation"></span></h3>
+                    <ul class="space-y-4 font-sans text-sm text-slate-400 leading-relaxed">
+                        <li>Isolate and organize per-project messaging within threaded discussions to maintain clean communication history <span class="citation"></span>.</li>
+                        <li>Experience real-time updates as messages automatically refresh every 30 seconds <span class="citation"></span>.</li>
+                        <li>Utilize unread badges to ensure critical data is never overlooked <span class="citation"></span>.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl interactive-hover group">
+                    <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">📁</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Data Logistics <span class="citation"></span></h3>
+                    <ul class="space-y-4 font-sans text-sm text-slate-400 leading-relaxed">
+                        <li>Drag-drop uploads facilitate intuitive file management, while secure storage is fortified by authenticated download protection to prevent unauthorized access <span class="citation"></span>.</li>
+                        <li>The system even includes soft delete functionality to recover accidentally deleted files, governed by tiered storage quotas (500MB/5GB/20GB) <span class="citation"></span>.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl interactive-hover group lg:col-span-2">
+                    <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">💰</div>
+                    <h3 class="font-display text-2xl font-bold mb-4">Financial Infrastructure <span class="citation"></span></h3>
+                    <p class="font-sans text-sm text-slate-400 leading-relaxed mb-6">
+                        Create professional invoices in seconds with support for multiple currencies, explicitly including USD and INR <span class="citation"></span>.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4 font-mono text-[10px] tracking-widest uppercase text-slate-500">
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center gap-3">
+                            <span class="text-nestAccent">●</span> Track status: Unpaid → Paid → Overdue <span class="citation"></span>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center gap-3">
+                            <span class="text-nestAccent">●</span> LemonSqueezy payment integration <span class="citation"></span>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-lg border border-white/5 flex items-center gap-3">
+                            <span class="text-nestAccent">●</span> Automated follow-up reminders <span class="citation"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="security" class="py-32 relative z-10 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="grid lg:grid-cols-2 gap-20 items-center">
+                
+                <div>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold mb-8">Enterprise Fortress</h2>
+                    <p class="font-sans text-lg text-slate-400 font-light leading-relaxed mb-10">
+                        Clientnest is engineered atop a highly resilient technology stack, utilizing Reflex (Python) for a full-stack experience without requiring JavaScript <span class="citation"></span>.
+                    </p>
+                    
+                    <div class="space-y-6 font-mono text-xs text-slate-300 tracking-wide">
+                        <div class="flex items-start gap-4">
+                            <span class="text-nestAccent mt-0.5">■</span>
+                            <div>
+                                <strong class="text-white block mb-1">Cryptographic Authentication <span class="citation"></span></strong>
+                                Custom bcrypt password hashing utilizing a secure cost factor of 12 <span class="citation"></span>.
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <span class="text-nestAccent mt-0.5">■</span>
+                            <div>
+                                <strong class="text-white block mb-1">Access Governance <span class="citation"></span></strong>
+                                Comprehensive CSRF protection against cross-site request forgery, paired with strict 24-hour session timeouts and account lockouts (30-minute freeze after 5 failed attempts) <span class="citation"></span>.
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <span class="text-nestAccent mt-0.5">■</span>
+                            <div>
+                                <strong class="text-white block mb-1">Threat Mitigation <span class="citation"></span></strong>
+                                Intelligent rate limiting throttles API abuse (configured at 100 req/min for webhooks), reinforced by OWASP recommended security headers and AES-256 data encryption <span class="citation"></span>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-1 rounded-3xl overflow-hidden interactive-hover">
+                    <div class="bg-void/90 rounded-2xl p-10 h-full flex flex-col justify-center border border-white/5">
+                        <div class="font-mono text-[10px] text-slate-500 uppercase tracking-widest mb-8 border-b border-white/10 pb-4">
+                            Infrastructure Blueprint <span class="citation"></span>
+                        </div>
+                        <ul class="space-y-6 font-mono text-sm text-slate-300">
+                            <li class="flex justify-between items-center">
+                                <span>Framework</span>
+                                <span class="text-white">Reflex (Python) <span class="citation"></span></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Database Engine</span>
+                                <span class="text-white">SQLite via SQLAlchemy <span class="citation"></span></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Payment Processor</span>
+                                <span class="text-white">LemonSqueezy <span class="citation"></span></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Email Transport</span>
+                                <span class="text-white">SMTP / Resend <span class="citation"></span></span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Deployment Protocol</span>
+                                <span class="text-white">Railway (~$7/mo) <span class="citation"></span></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-32 relative z-10 border-t border-white/5 bg-void/30">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="text-center mb-24">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-6">Simple, Transparent Pricing</h2>
+                <p class="font-mono text-[10px] text-slate-500 tracking-[0.2em] uppercase">Deploy capital efficiently <span class="citation"></span>.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8 items-center">
+                <div class="glass-panel p-10 rounded-3xl interactive-hover">
+                    <h3 class="font-display text-2xl font-bold mb-2">Free <span class="citation"></span></h3>
+                    <div class="font-mono text-4xl text-white mb-8">$0<span class="text-sm text-slate-500">/mo</span> <span class="citation"></span></div>
+                    <p class="font-sans text-xs text-slate-400 mb-8 h-8">Perfect for getting started and testing with real clients <span class="citation"></span>.</p>
+                    <ul class="space-y-4 font-mono text-[10px] tracking-widest uppercase text-slate-300 mb-10">
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> 2 Clients <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> 3 Projects <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> 500MB Storage <span class="citation"></span></li>
+                        <li class="flex items-center gap-3 text-slate-600 line-through"><span class="text-red-400/50">×</span> No White-Label <span class="citation"></span></li>
+                        <li class="flex items-center gap-3 text-slate-600 line-through"><span class="text-red-400/50">×</span> No Invoicing <span class="citation"></span></li>
+                    </ul>
+                    <a href="#" class="block w-full py-4 border border-white/20 text-center font-mono text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-colors">Start Free <span class="citation"></span></a>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl border-nestAccent/50 relative transform lg:-translate-y-4 shadow-[0_0_40px_rgba(99,102,241,0.1)] interactive-hover">
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-nestAccent text-white font-mono text-[9px] uppercase tracking-widest rounded-full">Freelancer Focus</div>
+                    <h3 class="font-display text-2xl font-bold mb-2">Solo <span class="citation"></span></h3>
+                    <div class="font-mono text-5xl text-white mb-8">$19<span class="text-sm text-slate-500">/mo</span> <span class="citation"></span></div>
+                    <p class="font-sans text-xs text-slate-400 mb-8 h-8">For individual freelancers looking to scale without limits <span class="citation"></span>.</p>
+                    <ul class="space-y-4 font-mono text-[10px] tracking-widest uppercase text-slate-300 mb-10">
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> Unlimited Clients <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> Unlimited Projects <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> 5GB Storage <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> Full White-Label <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> Invoicing Enabled <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-nestAccent">✓</span> 1 Team Member <span class="citation"></span></li>
+                    </ul>
+                    <a href="#" class="block w-full py-4 bg-white text-black text-center font-mono text-[10px] tracking-widest uppercase hover:bg-slate-200 transition-colors">Get Started <span class="citation"></span></a>
+                </div>
+
+                <div class="glass-panel p-10 rounded-3xl interactive-hover">
+                    <h3 class="font-display text-2xl font-bold mb-2">Agency <span class="citation"></span></h3>
+                    <div class="font-mono text-4xl text-white mb-8">$39<span class="text-sm text-slate-500">/mo</span> <span class="citation"></span></div>
+                    <p class="font-sans text-xs text-slate-400 mb-8 h-8">For growing agencies that require expansive collaboration capability <span class="citation"></span>.</p>
+                    <ul class="space-y-4 font-mono text-[10px] tracking-widest uppercase text-slate-300 mb-10">
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> Everything in Solo <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> 20GB Storage <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> 5 Team Members <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> Custom Domain <span class="citation"></span></li>
+                        <li class="flex items-center gap-3"><span class="text-green-400">✓</span> Priority Support <span class="citation"></span></li>
+                    </ul>
+                    <a href="#" class="block w-full py-4 border border-white/20 text-center font-mono text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-colors">Get Started <span class="citation"></span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-16 border-t border-white/5 relative z-10 bg-void">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full border border-white flex items-center justify-center text-white font-bold text-[10px]">C</div>
+                <span class="font-display text-xl font-bold tracking-widest uppercase text-white">Clientnest</span>
+            </div>
+            
+            <div class="text-center font-sans text-xs text-slate-500">
+                Built with ❤️ for solo consultants and small agencies <span class="citation"></span>.<br />
+                MIT Licensed <span class="citation"></span>.
+            </div>
+            
+            <div class="flex gap-8 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+                <a href="#" class="hover:text-white transition-colors interactive-hover">Docs</a>
+                <a href="https://github.com/yourusername/clientnest" class="hover:text-white transition-colors interactive-hover">GitHub <span class="citation"></span></a>
+                <a href="mailto:support@clientnest.com" class="hover:text-white transition-colors interactive-hover">Support <span class="citation"></span></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorRing = document.getElementById('cursor-ring');
+            const orbPrimary = document.getElementById('orb-primary');
+            const orbSecondary = document.getElementById('orb-secondary');
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let ringX = mouseX;
+            let ringY = mouseY;
+            let orbPrimX = 0, orbPrimY = 0;
+            let orbSecX = 0, orbSecY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                // Immediate dot update
+                cursorDot.style.left = `${mouseX}px`;
+                cursorDot.style.top = `${mouseY}px`;
+            });
+
+            // Handle interactive element hovers for cursor
+            const interactives = document.querySelectorAll('a, button, .interactive-hover');
+            interactives.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorDot.style.transform = 'translate(-50%, -50%) scale(0)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorDot.style.transform = 'translate(-50%, -50%) scale(1)';
+                });
+            });
+
+            // Smooth render loop
+            const render = () => {
+                // Lerp for cursor ring (smooth trailing effect)
+                ringX += (mouseX - ringX) * 0.15;
+                ringY += (mouseY - ringY) * 0.15;
+                cursorRing.style.left = `${ringX}px`;
+                cursorRing.style.top = `${ringY}px`;
+
+                // Parallax calculations for ambient orbs
+                const winCenterX = window.innerWidth / 2;
+                const winCenterY = window.innerHeight / 2;
+                const offsetX = (mouseX - winCenterX) / winCenterX;
+                const offsetY = (mouseY - winCenterY) / winCenterY;
+
+                // Subtle inverse movement
+                orbPrimX += ((offsetX * -80) - orbPrimX) * 0.05;
+                orbPrimY += ((offsetY * -80) - orbPrimY) * 0.05;
+                orbSecX += ((offsetX * 60) - orbSecX) * 0.04;
+                orbSecY += ((offsetY * 60) - orbSecY) * 0.04;
+
+                orbPrimary.style.transform = `translate(${orbPrimX}px, ${orbPrimY}px)`;
+                orbSecondary.style.transform = `translate(${orbSecX}px, ${orbSecY}px)`;
+
+                requestAnimationFrame(render);
+            };
+
+            render();
+        });
+    </script>
+</body>
+</html>
