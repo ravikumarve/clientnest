@@ -1,5 +1,22 @@
-"""Table components for Clientnest."""
+"""
+Enhanced Table Components - Glassmorphism Design
+=================================================
+
+Premium table components with glassmorphism effects for the Clientnest dashboard.
+All tables use the new lusion.co-inspired design system with blur effects and smooth animations.
+"""
+
 import reflex as rx
+from .glass import glass_button
+from .badges import status_badge, role_badge, invoice_status_badge
+from ..styles import (
+    Colors,
+    Typography,
+    Spacing,
+    BorderRadius,
+    Shadows,
+    Transitions,
+)
 
 
 def data_table(
@@ -7,7 +24,8 @@ def data_table(
     rows: list[dict],
     on_row_click: str = None,
 ) -> rx.Component:
-    """Create a data table component.
+    """
+    Enhanced data table with glassmorphism design.
     
     Args:
         columns: List of column definitions with 'key', 'label', and optional 'width'.
@@ -15,119 +33,81 @@ def data_table(
         on_row_click: Optional click handler for rows.
         
     Returns:
-        A data table component.
+        A glassmorphism data table component.
     """
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
-                *[
-                    rx.table.column_header_cell(
-                        rx.text(col["label"]),
-                        width=col.get("width", "auto"),
-                    )
-                    for col in columns
-                ],
-            ),
-        ),
-        rx.table.body(
-            *[
+    return rx.box(
+        rx.table.root(
+            rx.table.header(
                 rx.table.row(
                     *[
-                        rx.table.cell(
-                            rx.text(row.get(col["key"], "")),
-                            width=col.get("width", "auto"),
-                        )
-                        for col in columns
-                    ],
-                    on_click=on_row_click,
-                    cursor="pointer" if on_row_click else "default",
-                    _hover={"background": "gray.1"} if on_row_click else {},
-                )
-                for row in rows
-            ],
-        ),
-        variant="simple",
-    )
-
-
-def sortable_table(
-    columns: list[dict],
-    rows: list[dict],
-    sort_field: str = None,
-    sort_direction: str = "asc",
-    on_sort: str = None,
-    on_row_click: str = None,
-) -> rx.Component:
-    """Create a sortable data table component.
-    
-    Args:
-        columns: List of column definitions with 'key', 'label', and optional 'width'.
-        rows: List of row data dictionaries.
-        sort_field: The current sort field.
-        sort_direction: The current sort direction ('asc' or 'desc').
-        on_sort: Optional sort handler.
-        on_row_click: Optional click handler for rows.
-        
-    Returns:
-        A sortable data table component.
-    """
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
-                *[
-                    rx.table.column_header_cell(
-                        rx.hstack(
-                            rx.text(col["label"]),
-                            rx.cond(
-                                sort_field == col["key"],
-                                rx.icon(
-                                    "arrow-up" if sort_direction == "asc" else "arrow-down",
-                                    size=3,
-                                ),
+                        rx.table.column_header_cell(
+                            rx.text(
+                                col["label"],
+                                font_size=Typography.TEXT_SM,
+                                font_weight=Typography.FONT_SEMIBOLD,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.MONO,
+                                text_transform="uppercase",
+                                letter_spacing="0.05em",
                             ),
-                            align_items="center",
-                            spacing="1",
-                            cursor="pointer" if on_sort else "default",
-                            on_click=on_sort if on_sort else None,
-                        ),
-                        width=col.get("width", "auto"),
-                    )
-                    for col in columns
-                ],
-            ),
-        ),
-        rx.table.body(
-            *[
-                rx.table.row(
-                    *[
-                        rx.table.cell(
-                            rx.text(row.get(col["key"], "")),
                             width=col.get("width", "auto"),
+                            padding="4",
                         )
                         for col in columns
                     ],
-                    on_click=on_row_click,
-                    cursor="pointer" if on_row_click else "default",
-                    _hover={"background": "gray.1"} if on_row_click else {},
-                )
-                for row in rows
-            ],
+                    background="rgba(255, 255, 255, 0.02)",
+                    border_bottom=f"1px solid {Colors.BORDER_DARK}",
+                ),
+            ),
+            rx.table.body(
+                *[
+                    rx.table.row(
+                        *[
+                            rx.table.cell(
+                                rx.text(
+                                    row.get(col["key"], ""),
+                                    font_size=Typography.TEXT_BASE,
+                                    color=Colors.TEXT_PRIMARY,
+                                    font_family=Typography.SANS,
+                                ),
+                                width=col.get("width", "auto"),
+                                padding="4",
+                            )
+                            for col in columns
+                        ],
+                        on_click=on_row_click,
+                        cursor="pointer" if on_row_click else "default",
+                        transition=Transitions.TRANSITION_FAST,
+                        _hover={
+                            "background": Colors.BG_HOVER,
+                        } if on_row_click else {},
+                        border_bottom=f"1px solid {Colors.BORDER_DARK}",
+                    )
+                    for row in rows
+                ],
+            ),
+            variant="simple",
         ),
-        variant="simple",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
+        overflow="hidden",
+        box_shadow=Shadows.SHADOW_LG,
     )
 
 
 def project_table(projects: list[dict]) -> rx.Component:
-    """Create a project table component.
+    """
+    Enhanced project table with glassmorphism design.
     
     Args:
         projects: List of project data dictionaries.
         
     Returns:
-        A project table component.
+        A glassmorphism project table component.
     """
-    from .badges import status_badge
-    
     columns = [
         {"key": "title", "label": "Project", "width": "30%"},
         {"key": "client_name", "label": "Client", "width": "20%"},
@@ -136,62 +116,111 @@ def project_table(projects: list[dict]) -> rx.Component:
         {"key": "updated_at", "label": "Last Updated", "width": "20%"},
     ]
     
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
+    return rx.box(
+        rx.table.root(
+            rx.table.header(
+                rx.table.row(
+                    *[
+                        rx.table.column_header_cell(
+                            rx.text(
+                                col["label"],
+                                font_size=Typography.TEXT_SM,
+                                font_weight=Typography.FONT_SEMIBOLD,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.MONO,
+                                text_transform="uppercase",
+                                letter_spacing="0.05em",
+                            ),
+                            width=col["width"],
+                            padding="4",
+                        )
+                        for col in columns
+                    ],
+                    background="rgba(255, 255, 255, 0.02)",
+                    border_bottom=f"1px solid {Colors.BORDER_DARK}",
+                ),
+            ),
+            rx.table.body(
                 *[
-                    rx.table.column_header_cell(
-                        rx.text(col["label"]),
-                        width=col["width"],
+                    rx.table.row(
+                        rx.table.cell(
+                            rx.text(
+                                project.get("title", "Untitled"),
+                                font_size=Typography.TEXT_BASE,
+                                font_weight=Typography.FONT_MEDIUM,
+                                color=Colors.TEXT_PRIMARY,
+                                font_family=Typography.SANS,
+                            ),
+                            width="30%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                project.get("client_name", "Unknown"),
+                                font_size=Typography.TEXT_BASE,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.SANS,
+                            ),
+                            width="20%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            status_badge(project.get("status", "not_started")),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                format_date(project.get("due_date")),
+                                font_size=Typography.TEXT_SM,
+                                color=Colors.TEXT_TERTIARY,
+                                font_family=Typography.MONO,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                format_date(project.get("updated_at")),
+                                font_size=Typography.TEXT_SM,
+                                color=Colors.TEXT_TERTIARY,
+                                font_family=Typography.MONO,
+                            ),
+                            width="20%",
+                            padding="4",
+                        ),
+                        cursor="pointer",
+                        transition=Transitions.TRANSITION_FAST,
+                        _hover={
+                            "background": Colors.BG_HOVER,
+                        },
+                        border_bottom=f"1px solid {Colors.BORDER_DARK}",
                     )
-                    for col in columns
+                    for project in projects
                 ],
             ),
+            variant="simple",
         ),
-        rx.table.body(
-            *[
-                rx.table.row(
-                    rx.table.cell(
-                        rx.text(project.get("title", "Untitled")),
-                        width="30%",
-                    ),
-                    rx.table.cell(
-                        rx.text(project.get("client_name", "Unknown")),
-                        width="20%",
-                    ),
-                    rx.table.cell(
-                        status_badge(project.get("status", "not_started")),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_date(project.get("due_date"))),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_date(project.get("updated_at"))),
-                        width="20%",
-                    ),
-                    cursor="pointer",
-                    _hover={"background": "gray.1"},
-                )
-                for project in projects
-            ],
-        ),
-        variant="simple",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
+        overflow="hidden",
+        box_shadow=Shadows.SHADOW_LG,
     )
 
 
 def client_table(clients: list[dict]) -> rx.Component:
-    """Create a client table component.
+    """
+    Enhanced client table with glassmorphism design.
     
     Args:
         clients: List of client data dictionaries.
         
     Returns:
-        A client table component.
+        A glassmorphism client table component.
     """
-    from .badges import role_badge
-    
     columns = [
         {"key": "name", "label": "Name", "width": "25%"},
         {"key": "email", "label": "Email", "width": "30%"},
@@ -200,71 +229,120 @@ def client_table(clients: list[dict]) -> rx.Component:
         {"key": "last_login", "label": "Last Active", "width": "15%"},
     ]
     
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
+    return rx.box(
+        rx.table.root(
+            rx.table.header(
+                rx.table.row(
+                    *[
+                        rx.table.column_header_cell(
+                            rx.text(
+                                col["label"],
+                                font_size=Typography.TEXT_SM,
+                                font_weight=Typography.FONT_SEMIBOLD,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.MONO,
+                                text_transform="uppercase",
+                                letter_spacing="0.05em",
+                            ),
+                            width=col["width"],
+                            padding="4",
+                        )
+                        for col in columns
+                    ],
+                    background="rgba(255, 255, 255, 0.02)",
+                    border_bottom=f"1px solid {Colors.BORDER_DARK}",
+                ),
+            ),
+            rx.table.body(
                 *[
-                    rx.table.column_header_cell(
-                        rx.text(col["label"]),
-                        width=col["width"],
+                    rx.table.row(
+                        rx.table.cell(
+                            rx.hstack(
+                                rx.avatar(
+                                    name=client.get("name", "Unknown"),
+                                    src=client.get("avatar_url"),
+                                    size="sm",
+                                ),
+                                rx.text(
+                                    client.get("name", "Unknown"),
+                                    font_size=Typography.TEXT_BASE,
+                                    font_weight=Typography.FONT_MEDIUM,
+                                    color=Colors.TEXT_PRIMARY,
+                                    font_family=Typography.SANS,
+                                ),
+                                align_items="center",
+                                spacing="3",
+                            ),
+                            width="25%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                client.get("email", ""),
+                                font_size=Typography.TEXT_BASE,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.SANS,
+                            ),
+                            width="30%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            role_badge(client.get("role", "client")),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                str(client.get("project_count", 0)),
+                                font_size=Typography.TEXT_BASE,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.SANS,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                format_date(client.get("last_login")),
+                                font_size=Typography.TEXT_SM,
+                                color=Colors.TEXT_TERTIARY,
+                                font_family=Typography.MONO,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        cursor="pointer",
+                        transition=Transitions.TRANSITION_FAST,
+                        _hover={
+                            "background": Colors.BG_HOVER,
+                        },
+                        border_bottom=f"1px solid {Colors.BORDER_DARK}",
                     )
-                    for col in columns
+                    for client in clients
                 ],
             ),
+            variant="simple",
         ),
-        rx.table.body(
-            *[
-                rx.table.row(
-                    rx.table.cell(
-                        rx.hstack(
-                            rx.avatar(
-                                name=client.get("name", "Unknown"),
-                                src=client.get("avatar_url"),
-                                size="sm",
-                            ),
-                            rx.text(client.get("name", "Unknown")),
-                            align_items="center",
-                            spacing="2",
-                        ),
-                        width="25%",
-                    ),
-                    rx.table.cell(
-                        rx.text(client.get("email", "")),
-                        width="30%",
-                    ),
-                    rx.table.cell(
-                        role_badge(client.get("role", "client")),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(str(client.get("project_count", 0))),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_date(client.get("last_login"))),
-                        width="15%",
-                    ),
-                    cursor="pointer",
-                    _hover={"background": "gray.1"},
-                )
-                for client in clients
-            ],
-        ),
-        variant="simple",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
+        overflow="hidden",
+        box_shadow=Shadows.SHADOW_LG,
     )
 
 
 def invoice_table(invoices: list[dict]) -> rx.Component:
-    """Create an invoice table component.
+    """
+    Enhanced invoice table with glassmorphism design.
     
     Args:
         invoices: List of invoice data dictionaries.
         
     Returns:
-        An invoice table component.
+        A glassmorphism invoice table component.
     """
-    from .badges import invoice_status_badge
-    
     columns = [
         {"key": "id", "label": "Invoice #", "width": "15%"},
         {"key": "client_name", "label": "Client", "width": "25%"},
@@ -274,185 +352,177 @@ def invoice_table(invoices: list[dict]) -> rx.Component:
         {"key": "actions", "label": "Actions", "width": "15%"},
     ]
     
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
+    return rx.box(
+        rx.table.root(
+            rx.table.header(
+                rx.table.row(
+                    *[
+                        rx.table.column_header_cell(
+                            rx.text(
+                                col["label"],
+                                font_size=Typography.TEXT_SM,
+                                font_weight=Typography.FONT_SEMIBOLD,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.MONO,
+                                text_transform="uppercase",
+                                letter_spacing="0.05em",
+                            ),
+                            width=col["width"],
+                            padding="4",
+                        )
+                        for col in columns
+                    ],
+                    background="rgba(255, 255, 255, 0.02)",
+                    border_bottom=f"1px solid {Colors.BORDER_DARK}",
+                ),
+            ),
+            rx.table.body(
                 *[
-                    rx.table.column_header_cell(
-                        rx.text(col["label"]),
-                        width=col["width"],
+                    rx.table.row(
+                        rx.table.cell(
+                            rx.text(
+                                f"#{invoice.get('id', '')}",
+                                font_size=Typography.TEXT_BASE,
+                                font_weight=Typography.FONT_MEDIUM,
+                                color=Colors.TEXT_PRIMARY,
+                                font_family=Typography.MONO,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                invoice.get("client_name", "Unknown"),
+                                font_size=Typography.TEXT_BASE,
+                                color=Colors.TEXT_SECONDARY,
+                                font_family=Typography.SANS,
+                            ),
+                            width="25%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                format_currency(invoice.get("amount", 0), invoice.get("currency", "USD")),
+                                font_size=Typography.TEXT_BASE,
+                                font_weight=Typography.FONT_BOLD,
+                                color=Colors.NEST_ACCENT,
+                                font_family=Typography.DISPLAY,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            invoice_status_badge(invoice.get("status", "unpaid")),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.text(
+                                format_date(invoice.get("due_date")),
+                                font_size=Typography.TEXT_SM,
+                                color=Colors.TEXT_TERTIARY,
+                                font_family=Typography.MONO,
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        rx.table.cell(
+                            rx.hstack(
+                                glass_button(
+                                    "",
+                                    variant="secondary",
+                                    size="sm",
+                                ),
+                                glass_button(
+                                    "",
+                                    variant="ghost",
+                                    size="sm",
+                                ),
+                                spacing="2",
+                            ),
+                            width="15%",
+                            padding="4",
+                        ),
+                        cursor="pointer",
+                        transition=Transitions.TRANSITION_FAST,
+                        _hover={
+                            "background": Colors.BG_HOVER,
+                        },
+                        border_bottom=f"1px solid {Colors.BORDER_DARK}",
                     )
-                    for col in columns
+                    for invoice in invoices
                 ],
             ),
+            variant="simple",
         ),
-        rx.table.body(
-            *[
-                rx.table.row(
-                    rx.table.cell(
-                        rx.text(f"#{invoice.get('id', '')}"),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(invoice.get("client_name", "Unknown")),
-                        width="25%",
-                    ),
-                    rx.table.cell(
-                        rx.text(
-                            format_currency(invoice.get("amount", 0), invoice.get("currency", "USD"))
-                        ),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        invoice_status_badge(invoice.get("status", "unpaid")),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_date(invoice.get("due_date"))),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.hstack(
-                            rx.button(
-                                rx.icon("download", size=3),
-                                variant="soft",
-                                size="1",
-                            ),
-                            rx.button(
-                                rx.icon("send", size=3),
-                                variant="soft",
-                                size="1",
-                            ),
-                            spacing="1",
-                        ),
-                        width="15%",
-                    ),
-                    cursor="pointer",
-                    _hover={"background": "gray.1"},
-                )
-                for invoice in invoices
-            ],
-        ),
-        variant="simple",
-    )
-
-
-def file_table(files: list[dict]) -> rx.Component:
-    """Create a file table component.
-    
-    Args:
-        files: List of file data dictionaries.
-        
-    Returns:
-        A file table component.
-    """
-    columns = [
-        {"key": "filename", "label": "File Name", "width": "30%"},
-        {"key": "uploader_name", "label": "Uploaded By", "width": "20%"},
-        {"key": "file_size", "label": "Size", "width": "15%"},
-        {"key": "created_at", "label": "Upload Date", "width": "20%"},
-        {"key": "actions", "label": "Actions", "width": "15%"},
-    ]
-    
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
-                *[
-                    rx.table.column_header_cell(
-                        rx.text(col["label"]),
-                        width=col["width"],
-                    )
-                    for col in columns
-                ],
-            ),
-        ),
-        rx.table.body(
-            *[
-                rx.table.row(
-                    rx.table.cell(
-                        rx.hstack(
-                            rx.icon("file", size=4),
-                            rx.text(file.get("filename", "Unknown")),
-                            align_items="center",
-                            spacing="2",
-                        ),
-                        width="30%",
-                    ),
-                    rx.table.cell(
-                        rx.text(file.get("uploader_name", "Unknown")),
-                        width="20%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_file_size(file.get("file_size", 0))),
-                        width="15%",
-                    ),
-                    rx.table.cell(
-                        rx.text(format_date(file.get("created_at"))),
-                        width="20%",
-                    ),
-                    rx.table.cell(
-                        rx.hstack(
-                            rx.button(
-                                rx.icon("download", size=3),
-                                variant="soft",
-                                size="1",
-                            ),
-                            rx.button(
-                                rx.icon("trash", size=3),
-                                variant="soft",
-                                size="1",
-                                color_scheme="red",
-                            ),
-                            spacing="1",
-                        ),
-                        width="15%",
-                    ),
-                    cursor="pointer",
-                    _hover={"background": "gray.1"},
-                )
-                for file in files
-            ],
-        ),
-        variant="simple",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
+        overflow="hidden",
+        box_shadow=Shadows.SHADOW_LG,
     )
 
 
 def empty_table(message: str = "No data available") -> rx.Component:
-    """Create an empty table component.
+    """
+    Enhanced empty table with glassmorphism design.
     
     Args:
         message: The message to display.
         
     Returns:
-        An empty table component.
+        A glassmorphism empty table component.
     """
     return rx.box(
         rx.vstack(
-            rx.icon("inbox", size=8, color="gray"),
-            rx.text(message, size="2", color="gray"),
+            rx.icon("inbox", size=8, color=Colors.TEXT_TERTIARY),
+            rx.text(
+                message,
+                font_size=Typography.TEXT_BASE,
+                color=Colors.TEXT_TERTIARY,
+                font_family=Typography.SANS,
+            ),
             spacing="4",
             align_items="center",
         ),
-        padding="8",
+        padding="9",
         text_align="center",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
     )
 
 
 def loading_table() -> rx.Component:
-    """Create a loading table component.
+    """
+    Enhanced loading table with glassmorphism design.
     
     Returns:
-        A loading table component.
+        A glassmorphism loading table component.
     """
     return rx.box(
         rx.vstack(
-            rx.spinner(size="6"),
-            rx.text("Loading...", size="2", color="gray"),
+            rx.spinner(size="6", color=Colors.NEST_ACCENT),
+            rx.text(
+                "Loading...",
+                font_size=Typography.TEXT_BASE,
+                color=Colors.TEXT_TERTIARY,
+                font_family=Typography.SANS,
+            ),
             spacing="4",
             align_items="center",
         ),
-        padding="8",
+        padding="9",
         text_align="center",
+        background=Colors.BG_CARD,
+        backdrop_filter="blur(16px)",
+        webkit_backdrop_filter="blur(16px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_radius=BorderRadius.RADIUS_2XL,
     )
 
 
@@ -499,17 +569,11 @@ def format_currency(amount: float, currency: str = "USD") -> str:
     return f"{symbol}{amount:.2f}"
 
 
-def format_file_size(size: int) -> str:
-    """Format a file size.
-    
-    Args:
-        size: The file size in bytes.
-        
-    Returns:
-        The formatted file size string.
-    """
-    for unit in ["B", "KB", "MB", "GB"]:
-        if size < 1024:
-            return f"{size:.1f} {unit}"
-        size /= 1024
-    return f"{size:.1f} TB"
+__all__ = [
+    "data_table",
+    "project_table",
+    "client_table",
+    "invoice_table",
+    "empty_table",
+    "loading_table",
+]

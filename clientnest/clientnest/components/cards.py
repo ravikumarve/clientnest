@@ -1,74 +1,97 @@
-"""Card components for Clientnest."""
+"""
+Enhanced Card Components - Glassmorphism Design
+================================================
+
+Premium card components with glassmorphism effects for the Clientnest dashboard.
+All cards use the new lusion.co-inspired design system with blur effects and smooth animations.
+"""
+
 import reflex as rx
 from datetime import datetime
+from .glass import glass_card, glass_button
+from .badges import status_badge, role_badge, invoice_status_badge
+from ..styles import (
+    Colors,
+    Typography,
+    Spacing,
+    BorderRadius,
+    Shadows,
+    Transitions,
+)
 
 
 def project_card(project: dict, on_click: str) -> rx.Component:
-    """Create a project card component.
+    """
+    Enhanced project card with glassmorphism design.
     
     Args:
         project: The project data.
         on_click: The click handler.
         
     Returns:
-        A project card component.
+        A glassmorphism project card component.
     """
-    from .badges import status_badge
-    
-    return rx.card(
+    return glass_card(
         rx.vstack(
             rx.hstack(
-                rx.heading(project.get("title", "Untitled Project"), size="5"),
-                rx.spacer(),
+                rx.heading(
+                    project.get("title", "Untitled Project"),
+                    size="5",
+                    font_family=Typography.DISPLAY,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.TEXT_PRIMARY,
+                ),
                 status_badge(project.get("status", "not_started")),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
             rx.text(
                 project.get("description", "No description"),
-                color="gray",
-                size="1",
+                font_size=Typography.TEXT_BASE,
+                color=Colors.TEXT_TERTIARY,
+                font_family=Typography.SANS,
                 no_of_lines=2,
             ),
-            rx.spacer(),
+            rx.box(height="4"),
             rx.hstack(
                 rx.text(
                     f"Due: {format_date(project.get('due_date'))}",
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
-                rx.spacer(),
                 rx.text(
                     f"Updated: {format_date(project.get('updated_at'))}",
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
-            spacing="2",
+            spacing="3",
             align_items="stretch",
         ),
-        on_click=on_click,
         cursor="pointer",
-        _hover={"background": "gray.2"},
-        transition="all 0.2s",
+        on_click=on_click,
+        padding="6",
     )
 
 
 def client_card(client: dict, on_click: str) -> rx.Component:
-    """Create a client card component.
+    """
+    Enhanced client card with glassmorphism design.
     
     Args:
         client: The client data.
         on_click: The click handler.
         
     Returns:
-        A client card component.
+        A glassmorphism client card component.
     """
-    from .badges import role_badge
-    
-    return rx.card(
+    return glass_card(
         rx.vstack(
             rx.hstack(
                 rx.avatar(
@@ -77,132 +100,118 @@ def client_card(client: dict, on_click: str) -> rx.Component:
                     size="md",
                 ),
                 rx.vstack(
-                    rx.heading(client.get("name", "Unknown"), size="5"),
+                    rx.heading(
+                        client.get("name", "Unknown"),
+                        size="5",
+                        font_family=Typography.DISPLAY,
+                        font_weight=Typography.FONT_BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
                     rx.text(
                         client.get("email", ""),
-                        size="1",
-                        color="gray",
+                        font_size=Typography.TEXT_SM,
+                        color=Colors.TEXT_TERTIARY,
+                        font_family=Typography.SANS,
                     ),
-                    spacing="0",
+                    spacing="1",
                     align_items="start",
                 ),
-                rx.spacer(),
                 role_badge(client.get("role", "client")),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
-            rx.spacer(),
+            rx.box(height="4"),
             rx.hstack(
                 rx.text(
                     f"Projects: {client.get('project_count', 0)}",
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
-                rx.spacer(),
                 rx.text(
                     f"Last active: {format_date(client.get('last_login'))}",
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
-            spacing="2",
+            spacing="3",
             align_items="stretch",
         ),
-        on_click=on_click,
         cursor="pointer",
-        _hover={"background": "gray.2"},
-        transition="all 0.2s",
+        on_click=on_click,
+        padding="6",
     )
 
 
 def invoice_card(invoice: dict, on_click: str) -> rx.Component:
-    """Create an invoice card component.
+    """
+    Enhanced invoice card with glassmorphism design.
     
     Args:
         invoice: The invoice data.
         on_click: The click handler.
         
     Returns:
-        An invoice card component.
+        A glassmorphism invoice card component.
     """
-    from .badges import invoice_status_badge
-    
-    return rx.card(
+    return glass_card(
         rx.vstack(
             rx.hstack(
-                rx.heading(f"Invoice #{invoice.get('id', '')}", size="5"),
-                rx.spacer(),
+                rx.heading(
+                    f"Invoice #{invoice.get('id', '')}",
+                    size="5",
+                    font_family=Typography.DISPLAY,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.TEXT_PRIMARY,
+                ),
                 invoice_status_badge(invoice.get("status", "unpaid")),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
             rx.hstack(
                 rx.text(
                     f"Amount: {format_currency(invoice.get('amount', 0), invoice.get('currency', 'USD'))}",
-                    size="2",
-                    weight="bold",
+                    font_size=Typography.TEXT_2XL,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.NEST_ACCENT,
+                    font_family=Typography.DISPLAY,
                 ),
-                rx.spacer(),
                 rx.text(
                     f"Due: {format_date(invoice.get('due_date'))}",
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
-            rx.spacer(),
+            rx.box(height="4"),
             rx.text(
                 invoice.get("notes", "No notes"),
-                size="1",
-                color="gray",
+                font_size=Typography.TEXT_BASE,
+                color=Colors.TEXT_TERTIARY,
+                font_family=Typography.SANS,
                 no_of_lines=2,
             ),
-            spacing="2",
+            spacing="3",
             align_items="stretch",
         ),
-        on_click=on_click,
         cursor="pointer",
-        _hover={"background": "gray.2"},
-        transition="all 0.2s",
-    )
-
-
-def stat_card(title: str, value: str, icon: str, color: str = "blue") -> rx.Component:
-    """Create a stat card component.
-    
-    Args:
-        title: The stat title.
-        value: The stat value.
-        icon: The icon name.
-        color: The color scheme.
-        
-    Returns:
-        A stat card component.
-    """
-    return rx.card(
-        rx.vstack(
-            rx.hstack(
-                rx.icon(icon, size=4),
-                rx.spacer(),
-                rx.text(title, size="1", color="gray"),
-                align_items="center",
-                width="100%",
-            ),
-            rx.heading(value, size="4"),
-            spacing="2",
-            align_items="start",
-        ),
-        padding="4",
-        background=f"{color}.1",
-        border=f"2px solid {color}.3",
+        on_click=on_click,
+        padding="6",
     )
 
 
 def file_card(file: dict, on_download: str, on_delete: str) -> rx.Component:
-    """Create a file card component.
+    """
+    Enhanced file card with glassmorphism design.
     
     Args:
         file: The file data.
@@ -210,64 +219,77 @@ def file_card(file: dict, on_download: str, on_delete: str) -> rx.Component:
         on_delete: The delete handler.
         
     Returns:
-        A file card component.
+        A glassmorphism file card component.
     """
-    return rx.card(
+    return glass_card(
         rx.vstack(
             rx.hstack(
-                rx.icon("file", size=4),
+                rx.icon("file", size=4, color=Colors.NEST_ACCENT),
                 rx.vstack(
-                    rx.heading(file.get("filename", "Unknown"), size="5"),
+                    rx.heading(
+                        file.get("filename", "Unknown"),
+                        size="5",
+                        font_family=Typography.DISPLAY,
+                        font_weight=Typography.FONT_BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
                     rx.text(
                         f"{format_file_size(file.get('file_size', 0))} • {format_date(file.get('created_at'))}",
-                        size="1",
-                        color="gray",
+                        font_size=Typography.TEXT_SM,
+                        color=Colors.TEXT_TERTIARY,
+                        font_family=Typography.MONO,
                     ),
-                    spacing="0",
+                    spacing="1",
                     align_items="start",
                 ),
-                rx.spacer(),
                 rx.hstack(
-                    rx.button(
-                        rx.icon("download", size=3),
+                    glass_button(
+                        "Download",
+                        variant="secondary",
+                        size="sm",
                         on_click=on_download,
-                        color_scheme="blue",
-                        variant="soft",
                     ),
-                    rx.button(
-                        rx.icon("trash", size=3),
+                    glass_button(
+                        "Delete",
+                        variant="ghost",
+                        size="sm",
                         on_click=on_delete,
-                        color_scheme="red",
-                        variant="soft",
                     ),
                     spacing="2",
                 ),
                 align_items="center",
+                justify="space-between",
                 width="100%",
             ),
+            rx.box(height="4"),
             rx.text(
                 f"Uploaded by: {file.get('uploader_name', 'Unknown')}",
-                size="1",
-                color="gray",
+                font_size=Typography.TEXT_SM,
+                color=Colors.TEXT_TERTIARY,
+                font_family=Typography.SANS,
             ),
-            spacing="2",
+            spacing="3",
             align_items="stretch",
         ),
-        padding="3",
+        padding="6",
     )
 
 
 def message_card(message: dict, is_own: bool = False) -> rx.Component:
-    """Create a message card component.
+    """
+    Enhanced message card with glassmorphism design.
     
     Args:
         message: The message data.
         is_own: Whether the message is from the current user.
         
     Returns:
-        A message card component.
+        A glassmorphism message card component.
     """
-    return rx.card(
+    background = "rgba(99, 102, 241, 0.1)" if is_own else "rgba(255, 255, 255, 0.05)"
+    border_color = "rgba(99, 102, 241, 0.3)" if is_own else "rgba(255, 255, 255, 0.1)"
+    
+    return rx.box(
         rx.vstack(
             rx.hstack(
                 rx.avatar(
@@ -278,36 +300,50 @@ def message_card(message: dict, is_own: bool = False) -> rx.Component:
                 rx.vstack(
                     rx.text(
                         message.get("sender_name", "Unknown"),
-                        size="1",
-                        weight="bold",
+                        font_size=Typography.TEXT_BASE,
+                        font_weight=Typography.FONT_MEDIUM,
+                        color=Colors.TEXT_PRIMARY,
+                        font_family=Typography.SANS,
                     ),
                     rx.text(
                         format_time(message.get("created_at")),
-                        size="1",
-                        color="gray",
+                        font_size=Typography.TEXT_XS,
+                        color=Colors.TEXT_TERTIARY,
+                        font_family=Typography.MONO,
                     ),
-                    spacing="0",
+                    spacing="1",
                     align_items="start",
                 ),
                 align_items="center",
-                spacing="2",
+                spacing="3",
             ),
             rx.text(
                 message.get("body", ""),
-                size="2",
+                font_size=Typography.TEXT_BASE,
+                color=Colors.TEXT_PRIMARY,
+                font_family=Typography.SANS,
             ),
-            spacing="2",
+            spacing="3",
             align_items="start",
         ),
-        padding="3",
-        background="blue.1" if is_own else "gray.1",
+        padding="4",
+        background=background,
+        border=f"1px solid {border_color}",
+        border_radius=BorderRadius.RADIUS_LG,
+        backdrop_filter="blur(8px)",
+        webkit_backdrop_filter="blur(8px)",
         align_self="start" if not is_own else "end",
         max_width="70%",
+        transition=Transitions.TRANSITION_FAST,
+        _hover={
+            "border_color": "rgba(99, 102, 241, 0.5)" if is_own else "rgba(255, 255, 255, 0.2)",
+        },
     )
 
 
 def task_card(task: dict, on_toggle: str, on_delete: str) -> rx.Component:
-    """Create a task card component.
+    """
+    Enhanced task card with glassmorphism design.
     
     Args:
         task: The task data.
@@ -315,42 +351,52 @@ def task_card(task: dict, on_toggle: str, on_delete: str) -> rx.Component:
         on_delete: The delete handler.
         
     Returns:
-        A task card component.
+        A glassmorphism task card component.
     """
-    return rx.card(
+    return rx.box(
         rx.hstack(
             rx.checkbox(
                 checked=task.get("is_done", False),
                 on_change=on_toggle,
+                color_scheme="indigo",
             ),
             rx.vstack(
                 rx.text(
                     task.get("title", "Untitled"),
-                    size="2",
+                    font_size=Typography.TEXT_BASE,
                     decoration="line-through" if task.get("is_done", False) else "none",
-                    color="gray" if task.get("is_done", False) else "inherit",
+                    color=Colors.TEXT_MUTED if task.get("is_done", False) else Colors.TEXT_PRIMARY,
+                    font_family=Typography.SANS,
                 ),
                 rx.text(
                     format_date(task.get("created_at")),
-                    size="1",
-                    color="gray",
+                    font_size=Typography.TEXT_XS,
+                    color=Colors.TEXT_TERTIARY,
+                    font_family=Typography.MONO,
                 ),
-                spacing="0",
+                spacing="1",
                 align_items="start",
             ),
-            rx.spacer(),
-            rx.button(
-                rx.icon("trash", size=3),
-                on_click=on_delete,
-                color_scheme="red",
+            rx.box(flex="1"),
+            glass_button(
+                "",
                 variant="ghost",
-                size="1",
+                size="sm",
+                on_click=on_delete,
             ),
             align_items="center",
             spacing="3",
             width="100%",
         ),
-        padding="2",
+        padding="3",
+        background="rgba(255, 255, 255, 0.02)",
+        border=f"1px solid {Colors.BORDER_DARK}",
+        border_radius=BorderRadius.RADIUS_MD,
+        transition=Transitions.TRANSITION_FAST,
+        _hover={
+            "background": Colors.BG_HOVER,
+            "border_color": Colors.BORDER_MEDIUM,
+        },
     )
 
 
@@ -429,3 +475,13 @@ def format_file_size(size: int) -> str:
             return f"{size:.1f} {unit}"
         size /= 1024
     return f"{size:.1f} TB"
+
+
+__all__ = [
+    "project_card",
+    "client_card",
+    "invoice_card",
+    "file_card",
+    "message_card",
+    "task_card",
+]

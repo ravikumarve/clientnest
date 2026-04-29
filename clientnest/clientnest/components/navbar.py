@@ -1,23 +1,61 @@
-"""Navigation bar components for Clientnest."""
+"""
+Enhanced Navigation Components - Glassmorphism Design
+====================================================
+
+Premium navigation components with glassmorphism effects for the Clientnest dashboard.
+All navigation elements use the new lusion.co-inspired design system with blur effects.
+"""
+
 import reflex as rx
+from .glass import glass_button
+from ..styles import (
+    Colors,
+    Typography,
+    Spacing,
+    BorderRadius,
+    Shadows,
+    Transitions,
+)
 
 
 def navbar() -> rx.Component:
-    """Create the main navigation bar component.
+    """
+    Enhanced main navigation bar with glassmorphism design.
     
     Returns:
-        A navigation bar component.
+        A glassmorphism navigation bar component.
     """
     return rx.box(
         rx.hstack(
             # Logo
             rx.hstack(
-                rx.icon("briefcase", size=6),
-                rx.heading("Clientnest", size="6"),
+                rx.box(
+                    rx.text(
+                        "C",
+                        font_size=Typography.TEXT_XL,
+                        font_weight=Typography.FONT_BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
+                    width="32px",
+                    height="32px",
+                    border=f"1px solid {Colors.BORDER_MEDIUM}",
+                    border_radius=BorderRadius.RADIUS_FULL,
+                    display="flex",
+                    align_items="center",
+                    justify_content="center",
+                ),
+                rx.heading(
+                    "Clientnest",
+                    size="6",
+                    font_family=Typography.DISPLAY,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.TEXT_PRIMARY,
+                    letter_spacing="-0.025em",
+                ),
                 align_items="center",
-                spacing="2",
+                spacing="3",
             ),
-            rx.spacer(),
+            rx.box(flex="1"),
             # Navigation items
             rx.hstack(
                 nav_link("Dashboard", "/dashboard"),
@@ -25,51 +63,67 @@ def navbar() -> rx.Component:
                 nav_link("Clients", "/clients"),
                 nav_link("Invoices", "/invoices"),
                 nav_link("Settings", "/settings"),
-                spacing="4",
+                spacing="6",
             ),
             # User menu
-            rx.menu.root(
-                rx.menu.trigger(
-                    rx.avatar(
-                        size="sm",
-                        cursor="pointer",
-                    ),
-                ),
-                rx.menu.content(
-                    rx.menu.item("Profile"),
-                    rx.menu.item("Billing"),
-                    rx.menu.separator(),
-                    rx.menu.item("Logout", color="red"),
-                ),
-            ),
+            user_menu(),
             align_items="center",
             spacing="6",
         ),
-        padding="4",
-        background="white",
-        border_bottom="1px solid #e2e8f0",
+        padding="6",
+        background=Colors.NEST_SURFACE,
+        backdrop_filter="blur(24px)",
+        webkit_backdrop_filter="blur(24px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_bottom=f"1px solid {Colors.BORDER_DARK}",
         position="sticky",
         top="0",
-        z_index="10",
+        z_index="1000",
     )
 
 
 def sidebar() -> rx.Component:
-    """Create the sidebar navigation component.
+    """
+    Enhanced sidebar navigation with glassmorphism design.
     
     Returns:
-        A sidebar component.
+        A glassmorphism sidebar component.
     """
     return rx.box(
         rx.vstack(
             # Logo
             rx.hstack(
-                rx.icon("briefcase", size=5),
-                rx.heading("Clientnest", size="5"),
+                rx.box(
+                    rx.text(
+                        "C",
+                        font_size=Typography.TEXT_LG,
+                        font_weight=Typography.FONT_BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
+                    width="28px",
+                    height="28px",
+                    border=f"1px solid {Colors.BORDER_MEDIUM}",
+                    border_radius=BorderRadius.RADIUS_FULL,
+                    display="flex",
+                    align_items="center",
+                    justify_content="center",
+                ),
+                rx.heading(
+                    "Clientnest",
+                    size="5",
+                    font_family=Typography.DISPLAY,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.TEXT_PRIMARY,
+                    letter_spacing="-0.025em",
+                ),
                 align_items="center",
-                spacing="2",
+                spacing="3",
             ),
-            rx.divider(),
+            rx.box(
+                height="1px",
+                width="100%",
+                background=f"linear-gradient(90deg, transparent, {Colors.BORDER_MEDIUM}, transparent)",
+            ),
             # Navigation items
             rx.vstack(
                 sidebar_link("Dashboard", "/dashboard", "layout-dashboard"),
@@ -79,153 +133,147 @@ def sidebar() -> rx.Component:
                 sidebar_link("Settings", "/settings", "settings"),
                 spacing="2",
                 align_items="stretch",
+                width="100%",
             ),
-            rx.spacer(),
+            rx.box(flex="1"),
             # User info
             rx.box(
                 rx.hstack(
                     rx.avatar(size="sm"),
                     rx.vstack(
-                        rx.text("User Name", size="1", weight="bold"),
-                        rx.text("user@example.com", size="1", color="gray"),
-                        spacing="0",
+                        rx.text(
+                            "User Name",
+                            font_size=Typography.TEXT_SM,
+                            font_weight=Typography.FONT_MEDIUM,
+                            color=Colors.TEXT_PRIMARY,
+                            font_family=Typography.SANS,
+                        ),
+                        rx.text(
+                            "user@example.com",
+                            font_size=Typography.TEXT_XS,
+                            color=Colors.TEXT_TERTIARY,
+                            font_family=Typography.SANS,
+                        ),
+                        spacing="1",
                         align_items="start",
                     ),
                     align_items="center",
-                    spacing="2",
+                    spacing="3",
                 ),
                 padding="3",
-                background="gray.1",
-                border_radius="md",
+                background="rgba(255, 255, 255, 0.02)",
+                border=f"1px solid {Colors.BORDER_DARK}",
+                border_radius=BorderRadius.RADIUS_LG,
             ),
-            spacing="4",
+            spacing="6",
             align_items="stretch",
+            width="100%",
         ),
         width="250px",
         height="100vh",
-        background="white",
-        border_right="1px solid #e2e8f0",
+        background=Colors.NEST_SURFACE,
+        backdrop_filter="blur(24px)",
+        webkit_backdrop_filter="blur(24px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_right=f"1px solid {Colors.BORDER_DARK}",
         position="fixed",
         left="0",
         top="0",
-        padding="4",
+        padding="6",
         display=["none", "none", "flex"],
+        z_index="999",
     )
 
 
 def mobile_navbar() -> rx.Component:
-    """Create the mobile navigation bar component.
+    """
+    Enhanced mobile navigation bar with glassmorphism design.
     
     Returns:
-        A mobile navigation bar component.
+        A glassmorphism mobile navigation bar component.
     """
     return rx.box(
         rx.hstack(
             # Logo
             rx.hstack(
-                rx.icon("briefcase", size=5),
-                rx.heading("Clientnest", size="5"),
+                rx.box(
+                    rx.text(
+                        "C",
+                        font_size=Typography.TEXT_LG,
+                        font_weight=Typography.FONT_BOLD,
+                        color=Colors.TEXT_PRIMARY,
+                    ),
+                    width="28px",
+                    height="28px",
+                    border=f"1px solid {Colors.BORDER_MEDIUM}",
+                    border_radius=BorderRadius.RADIUS_FULL,
+                    display="flex",
+                    align_items="center",
+                    justify_content="center",
+                ),
+                rx.heading(
+                    "Clientnest",
+                    size="5",
+                    font_family=Typography.DISPLAY,
+                    font_weight=Typography.FONT_BOLD,
+                    color=Colors.TEXT_PRIMARY,
+                    letter_spacing="-0.025em",
+                ),
                 align_items="center",
-                spacing="2",
+                spacing="3",
             ),
-            rx.spacer(),
+            rx.box(flex="1"),
             # Mobile menu button
-            rx.button(
-                rx.icon("menu", size=5),
-                on_click=lambda: rx.toggle_sidebar(),
+            glass_button(
+                "",
                 variant="ghost",
+                size="sm",
+                on_click=lambda: rx.toggle_sidebar(),
             ),
             align_items="center",
             spacing="4",
         ),
         padding="4",
-        background="white",
-        border_bottom="1px solid #e2e8f0",
+        background=Colors.NEST_SURFACE,
+        backdrop_filter="blur(24px)",
+        webkit_backdrop_filter="blur(24px)",
+        border=f"1px solid {Colors.BORDER_LIGHT}",
+        border_bottom=f"1px solid {Colors.BORDER_DARK}",
         display=["flex", "flex", "none"],
-    )
-
-
-def mobile_sidebar() -> rx.Component:
-    """Create the mobile sidebar component.
-    
-    Returns:
-        A mobile sidebar component.
-    """
-    return rx.drawer.root(
-        rx.drawer.trigger(
-            rx.button(
-                rx.icon("menu", size=5),
-                variant="ghost",
-            ),
-        ),
-        rx.drawer.content(
-            rx.vstack(
-                # Logo
-                rx.hstack(
-                    rx.icon("briefcase", size=5),
-                    rx.heading("Clientnest", size="5"),
-                    align_items="center",
-                    spacing="2",
-                ),
-                rx.divider(),
-                # Navigation items
-                rx.vstack(
-                    sidebar_link("Dashboard", "/dashboard", "layout-dashboard"),
-                    sidebar_link("Projects", "/projects", "folder"),
-                    sidebar_link("Clients", "/clients", "users"),
-                    sidebar_link("Invoices", "/invoices", "file-text"),
-                    sidebar_link("Settings", "/settings", "settings"),
-                    spacing="2",
-                    align_items="stretch",
-                ),
-                rx.spacer(),
-                # User info
-                rx.box(
-                    rx.hstack(
-                        rx.avatar(size="sm"),
-                        rx.vstack(
-                            rx.text("User Name", size="1", weight="bold"),
-                            rx.text("user@example.com", size="1", color="gray"),
-                            spacing="0",
-                            align_items="start",
-                        ),
-                        align_items="center",
-                        spacing="2",
-                    ),
-                    padding="3",
-                    background="gray.1",
-                    border_radius="md",
-                ),
-                spacing="4",
-                align_items="stretch",
-            ),
-            width="250px",
-            padding="4",
-        ),
+        position="sticky",
+        top="0",
+        z_index="1000",
     )
 
 
 def nav_link(text: str, href: str) -> rx.Component:
-    """Create a navigation link component.
+    """
+    Enhanced navigation link with glassmorphism design.
     
     Args:
         text: The link text.
         href: The link href.
         
     Returns:
-        A navigation link component.
+        A glassmorphism navigation link component.
     """
     return rx.link(
         text,
         href=href,
-        color="gray",
-        _hover={"color": "blue"},
-        transition="all 0.2s",
+        font_size=Typography.TEXT_SM,
+        font_weight=Typography.FONT_MEDIUM,
+        color=Colors.TEXT_SECONDARY,
+        font_family=Typography.SANS,
+        transition=Transitions.TRANSITION_FAST,
+        _hover={
+            "color": Colors.TEXT_PRIMARY,
+        },
     )
 
 
 def sidebar_link(text: str, href: str, icon: str) -> rx.Component:
-    """Create a sidebar link component.
+    """
+    Enhanced sidebar link with glassmorphism design.
     
     Args:
         text: The link text.
@@ -233,144 +281,45 @@ def sidebar_link(text: str, href: str, icon: str) -> rx.Component:
         icon: The icon name.
         
     Returns:
-        A sidebar link component.
+        A glassmorphism sidebar link component.
     """
     return rx.link(
         rx.hstack(
-            rx.icon(icon, size=4),
-            rx.text(text, size="2"),
+            rx.icon(icon, size=4, color=Colors.TEXT_SECONDARY),
+            rx.text(
+                text,
+                font_size=Typography.TEXT_BASE,
+                font_weight=Typography.FONT_MEDIUM,
+                color=Colors.TEXT_SECONDARY,
+                font_family=Typography.SANS,
+            ),
             align_items="center",
-            spacing="2",
+            spacing="3",
         ),
         href=href,
-        padding="2",
-        border_radius="md",
-        _hover={"background": "gray.1"},
-        transition="all 0.2s",
-    )
-
-
-def breadcrumb(items: list[tuple[str, str]]) -> rx.Component:
-    """Create a breadcrumb component.
-    
-    Args:
-        items: A list of (text, href) tuples.
-        
-    Returns:
-        A breadcrumb component.
-    """
-    return rx.hstack(
-        *[
-            rx.fragment(
-                rx.link(text, href=href, color="gray"),
-                rx.icon("chevron-right", size=3, color="gray") if i < len(items) - 1 else None,
-            )
-            for i, (text, href) in enumerate(items)
-        ],
-        spacing="2",
-        align_items="center",
-        padding="2",
-    )
-
-
-def tabs(tabs: list[tuple[str, str]], active_tab: str) -> rx.Component:
-    """Create a tabs component.
-    
-    Args:
-        tabs: A list of (label, value) tuples.
-        active_tab: The currently active tab value.
-        
-    Returns:
-        A tabs component.
-    """
-    return rx.tabs.root(
-        rx.tabs.list(
-            *[
-                rx.tabs.trigger(
-                    label,
-                    value=value,
-                )
-                for label, value in tabs
-            ],
-        ),
-        *[
-            rx.tabs.content(
-                rx.text(f"Content for {label}"),
-                value=value,
-            )
-            for label, value in tabs
-        ],
-        value=active_tab,
-    )
-
-
-def pagination(current_page: int, total_pages: int) -> rx.Component:
-    """Create a pagination component.
-    
-    Args:
-        current_page: The current page number.
-        total_pages: The total number of pages.
-        
-    Returns:
-        A pagination component.
-    """
-    return rx.hstack(
-        rx.button(
-            rx.icon("chevron-left", size=3),
-            on_click=lambda: rx.previous_page(),
-            disabled=current_page == 1,
-            variant="soft",
-        ),
-        rx.text(
-            f"Page {current_page} of {total_pages}",
-            size="2",
-        ),
-        rx.button(
-            rx.icon("chevron-right", size=3),
-            on_click=lambda: rx.next_page(),
-            disabled=current_page == total_pages,
-            variant="soft",
-        ),
-        spacing="2",
-        align_items="center",
-    )
-
-
-def search_bar(placeholder: str = "Search...") -> rx.Component:
-    """Create a search bar component.
-    
-    Args:
-        placeholder: The placeholder text.
-        
-    Returns:
-        A search bar component.
-    """
-    return rx.hstack(
-        rx.icon("search", size=4, color="gray"),
-        rx.input(
-            placeholder=placeholder,
-            variant="ghost",
-            width="100%",
-        ),
-        align_items="center",
-        spacing="2",
-        padding="2",
-        background="gray.1",
-        border_radius="md",
+        padding="3",
+        border_radius=BorderRadius.RADIUS_LG,
+        transition=Transitions.TRANSITION_FAST,
+        _hover={
+            "background": Colors.BG_HOVER,
+            "color": Colors.TEXT_PRIMARY,
+        },
+        width="100%",
     )
 
 
 def user_menu() -> rx.Component:
-    """Create a user menu component.
+    """
+    Enhanced user menu with glassmorphism design.
     
     Returns:
-        A user menu component.
+        A glassmorphism user menu component.
     """
     return rx.menu.root(
         rx.menu.trigger(
             rx.hstack(
                 rx.avatar(size="sm"),
-                rx.icon("chevron-down", size=3),
+                rx.icon("chevron-down", size=3, color=Colors.TEXT_SECONDARY),
                 align_items="center",
                 spacing="2",
                 cursor="pointer",
@@ -386,11 +335,91 @@ def user_menu() -> rx.Component:
     )
 
 
+def breadcrumb(items: list[tuple[str, str]]) -> rx.Component:
+    """
+    Enhanced breadcrumb with glassmorphism design.
+    
+    Args:
+        items: A list of (text, href) tuples.
+        
+    Returns:
+        A glassmorphism breadcrumb component.
+    """
+    return rx.hstack(
+        *[
+            rx.fragment(
+                rx.link(
+                    text,
+                    href=href,
+                    font_size=Typography.TEXT_SM,
+                    color=Colors.TEXT_SECONDARY,
+                    font_family=Typography.SANS,
+                    transition=Transitions.TRANSITION_FAST,
+                    _hover={
+                        "color": Colors.TEXT_PRIMARY,
+                    },
+                ),
+                rx.icon(
+                    "chevron-right",
+                    size=3,
+                    color=Colors.TEXT_TERTIARY,
+                ) if i < len(items) - 1 else None,
+            )
+            for i, (text, href) in enumerate(items)
+        ],
+        spacing="2",
+        align_items="center",
+        padding="3",
+    )
+
+
+def search_bar(placeholder: str = "Search...") -> rx.Component:
+    """
+    Enhanced search bar with glassmorphism design.
+    
+    Args:
+        placeholder: The placeholder text.
+        
+    Returns:
+        A glassmorphism search bar component.
+    """
+    return rx.hstack(
+        rx.icon("search", size=4, color=Colors.TEXT_TERTIARY),
+        rx.input(
+            placeholder=placeholder,
+            background="transparent",
+            border="none",
+            color=Colors.TEXT_PRIMARY,
+            font_family=Typography.SANS,
+            font_size=Typography.TEXT_BASE,
+            width="100%",
+            _focus={
+                "outline": "none",
+            },
+            _placeholder={
+                "color": Colors.TEXT_TERTIARY,
+            },
+        ),
+        align_items="center",
+        spacing="3",
+        padding="3",
+        background="rgba(255, 255, 255, 0.02)",
+        border=f"1px solid {Colors.BORDER_DARK}",
+        border_radius=BorderRadius.RADIUS_LG,
+        transition=Transitions.TRANSITION_FAST,
+        _focus={
+            "border_color": Colors.NEST_ACCENT,
+            "box_shadow": Shadows.GLOW_ACCENT,
+        },
+    )
+
+
 def notification_dropdown() -> rx.Component:
-    """Create a notification dropdown component.
+    """
+    Enhanced notification dropdown with glassmorphism design.
     
     Returns:
-        A notification dropdown component.
+        A glassmorphism notification dropdown component.
     """
     return rx.dropdown.root(
         rx.dropdown.trigger(
@@ -411,13 +440,31 @@ def notification_dropdown() -> rx.Component:
         ),
         rx.dropdown.content(
             rx.heading("Notifications", size="4"),
-            rx.divider(),
+            rx.box(
+                height="1px",
+                width="100%",
+                background=f"linear-gradient(90deg, transparent, {Colors.BORDER_MEDIUM}, transparent)",
+                margin=f"{"4"} 0",
+            ),
             rx.vstack(
                 rx.text("New project assigned", size="2"),
                 rx.text("Invoice overdue", size="2"),
                 rx.text("Client message received", size="2"),
-                spacing="2",
+                spacing="3",
             ),
             width="300",
         ),
     )
+
+
+__all__ = [
+    "navbar",
+    "sidebar",
+    "mobile_navbar",
+    "nav_link",
+    "sidebar_link",
+    "user_menu",
+    "breadcrumb",
+    "search_bar",
+    "notification_dropdown",
+]

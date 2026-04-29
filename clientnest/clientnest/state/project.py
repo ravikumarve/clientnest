@@ -298,6 +298,11 @@ class ProjectState(rx.State):
         return self.projects
 
     @rx.var
+    def active_count(self) -> int:
+        """Get count of active projects."""
+        return len([p for p in self.projects if p.get("status") == "in_progress"])
+
+    @rx.var
     def project_status_color(self) -> str:
         """Get color for current project status."""
         status = self.current_project.get("status", "not_started")
